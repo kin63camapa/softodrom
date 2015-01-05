@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="error.png">img/error.png</file>
+        <file alias="ok.png">img/ok.png</file>
+        <file alias="warn.png">img/warn.png</file>
+        <file alias="loading.gif">img/loading.gif</file>
+        <file alias="softodrom.ico">img/softodrom.ico</file>
+    </qresource>
+</RCC>
