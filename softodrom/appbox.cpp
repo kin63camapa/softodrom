@@ -318,38 +318,3 @@ void appBox::openUrl(QString url)
 {
     QDesktopServices::openUrl(QUrl::fromUserInput(url));
 }
-
-QString appBox::description()
-{
-    switch (state)
-    {
-    case wait:
-        return "state waint";
-    case ready:
-        return "state ready";
-    case normal:
-        return "state normal";
-    case error:
-        return "state error";
-    case warning:
-        return "state warning";
-    }
-    return "";
-}
-
-//void appBox::setAppName(QString name)
-//{
-//    ui->name->setText(name);
-//    info.name = name;
-//}
-
-//void appBox::setDescription(QString desc)
-//{
-//    ui->description->setText(desc);
-//    info.description = desc;
-//}
-
-//void appBox::setImage(QPixmap image)
-//{
-//    ui->ico->setPixmap(image);
-//}

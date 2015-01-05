@@ -47,7 +47,6 @@ public:
     } state;
     bool isMarkered();
     bool isUnmarkered(){return !isMarkered();}
-    QString description();
 public slots:
     void startInstall();
     void startAnimation();
