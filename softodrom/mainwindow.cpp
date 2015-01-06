@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
     installer = new Installer(this);
     connect(installer,SIGNAL(result(appBox*,appBox::STATE)),
             this,SLOT(result(appBox*,appBox::STATE)));
-    connect(installer,SIGNAL(startInstall(appBox*)),this,SLOT(start(appBox*)));
+    //connect(installer,SIGNAL(startInstall(appBox*)),this,SLOT(start(appBox*)));
     connect(installer,SIGNAL(finish()),this,SLOT(finish()));
 
     showAllAction =  new QAction(QString::fromUtf8("Показать все"),this);
@@ -233,8 +233,8 @@ void MainWindow::scanComplete()
     rebulildBoxes();
     ui->startSetupAction->setDisabled(0);
     ui->startStopButton->setDisabled(0);
-    foreach(appBox* tmp,soft) if (tmp->state == appBox::ready) tmp->setMarkered();
-    foreach(appBox* tmp,update) if (tmp->state == appBox::ready) tmp->setMarkered();
+    foreach(appBox* tmp,soft) if (tmp->state == appBox::ready) tmp->setChecked();
+    foreach(appBox* tmp,update) if (tmp->state == appBox::ready) tmp->setChecked();
     unmarkedKit("nogroup");
 }
 
@@ -255,18 +255,10 @@ void MainWindow::result(appBox * box, appBox::STATE status)
     box->stopInstall(status);
 }
 
-void MainWindow::start(appBox * box)
-{
-    box->startAnimation();
-}
-
-void MainWindow::finish()
-{
-    installOneNow = 0;
-    if (installer->isRunning()) installer->terminate();
-    ui->renewButton->setDisabled(0);
-    ui->rescanAction->setDisabled(0);
-}
+//void MainWindow::start(appBox * box)
+//{
+//    box->startInstall();
+//}
 
 void MainWindow::showSettings()
 {
@@ -370,7 +362,7 @@ void MainWindow::installOne(appBox *app)
     installOneNow = 1;
     ui->renewButton->setDisabled(true);
     ui->rescanAction->setDisabled(true);
-    app->startInstall();
+    app->startWait();
     QList <appBox*> l;
     l.push_back(app);
     installer->setApps(l);
@@ -388,7 +380,6 @@ void MainWindow::on_startStopButton_clicked()
     {
         while (installer->isRunning())
             installer->terminate();
-        ////////////////////////////////////////////////////////////////////////////////
     }
     else
     {
@@ -399,13 +390,13 @@ void MainWindow::on_startStopButton_clicked()
         QList <appBox*> checkedApps;
         foreach(appBox *tmp,soft)
         {
-            if (tmp->isMarkered() && tmp->state == appBox::ready)
+            if (tmp->isChecked() && tmp->state == appBox::ready)
             {
-                tmp->startInstall();
+                tmp->startWait();
                 checkedApps.push_back(tmp);
             }else
             {
-                tmp->setUnmarkered();
+                tmp->setUnchecked();
                 tmp->hide();
             }
         }
@@ -424,10 +415,26 @@ void MainWindow::on_startStopButton_clicked()
         {
             if (tmp->state == appBox::wait)
             {
-                tmp->stopInstall(appBox::warning);
+                tmp->stopInstall(appBox::ready);
+            }
+            if (tmp->state == appBox::setup)
+            {
+                tmp->stopInstall(appBox::error);
+                tmp->setMessage(QString::fromUtf8("Установка прервана!"));
             }
         }
     }
+}
+
+void MainWindow::finish()
+{
+    installOneNow = false;
+    if (installer->isRunning()) installer->terminate();
+    ui->renewButton->setEnabled(true);
+    ui->rescanAction->setEnabled(true);
+    ui->startStopButton->setText(QString::fromUtf8(" Начать установку "));
+    ui->startSetupAction->setText(QString::fromUtf8("Начать установку"));
+    QMessageBox::information(this,QString::fromUtf8("Уcтановка завершена!"),QString::fromUtf8("Уcтановка завершена, для просмотра статуса неведите курсор на название программы."),QString::fromUtf8("Угу"));
 }
 
 void MainWindow::enableKit(QString kitname)
@@ -437,7 +444,7 @@ void MainWindow::enableKit(QString kitname)
         if (tmp->getInfo().kits.contains(kitname))
         {
             tmp->show();
-            //tmp->setMarkered();
+            //tmp->setChecked();
         }
     }
 }
@@ -449,7 +456,7 @@ void MainWindow::disableKit(QString kitname)
         if (tmp->getInfo().kits.contains(kitname))
         {
             tmp->hide();
-            tmp->setUnmarkered();
+            tmp->setUnchecked();
         }
     }
 }
@@ -460,7 +467,7 @@ void MainWindow::markedKit(QString kitname)
     {
         if (tmp->getInfo().kits.contains(kitname) && tmp->state == appBox::ready)
         {
-            tmp->setMarkered();
+            tmp->setChecked();
         }
     }
 }
@@ -471,7 +478,7 @@ void MainWindow::unmarkedKit(QString kitname)
     {
         if (tmp->getInfo().kits.contains(kitname))
         {
-            tmp->setUnmarkered();
+            tmp->setUnchecked();
         }
     }
 }
@@ -482,14 +489,14 @@ void MainWindow::uncheckInstalled()
     {
         if (tmp->state == appBox::normal)
         {
-            tmp->setUnmarkered();
+            tmp->setUnchecked();
         }
     }
     foreach(appBox* tmp,update)
     {
         if (tmp->state == appBox::normal)
         {
-            tmp->setUnmarkered();
+            tmp->setUnchecked();
         }
     }
 }
@@ -500,14 +507,14 @@ void MainWindow::on_markedAllAction_triggered()
     {
         if (!tmp->isHidden())
         {
-            tmp->setMarkered();
+            tmp->setChecked();
         }
     }
     foreach(appBox* tmp,update)
     {
         if (!tmp->isHidden())
         {
-            tmp->setMarkered();
+            tmp->setChecked();
         }
     }
 }
@@ -516,11 +523,11 @@ void MainWindow::on_unmarkedAllAction_triggered()
 {
     foreach(appBox* tmp,soft)
     {
-        tmp->setUnmarkered();
+        tmp->setUnchecked();
     }
     foreach(appBox* tmp,update)
     {
-        tmp->setMarkered();
+        tmp->setChecked();
     }
 }
 
@@ -528,11 +535,11 @@ void MainWindow::on_markedSoftOnly_triggered()
 {
     foreach(appBox* tmp,soft)
     {
-        tmp->setMarkered();
+        tmp->setChecked();
     }
     foreach(appBox* tmp,update)
     {
-        tmp->setUnmarkered();
+        tmp->setUnchecked();
     }
 }
 
@@ -540,11 +547,11 @@ void MainWindow::on_markedUpdatesOnly_triggered()
 {
     foreach(appBox* tmp,soft)
     {
-        tmp->setUnmarkered();
+        tmp->setUnchecked();
     }
     foreach(appBox* tmp,update)
     {
-        tmp->setMarkered();
+        tmp->setChecked();
     }
 }
 
@@ -561,7 +568,7 @@ void MainWindow::hideAll()
     foreach(appBox* tmp,soft)
     {
         tmp->hide();
-        tmp->setUnmarkered();
+        tmp->setUnchecked();
     }
 }
 
@@ -570,6 +577,7 @@ void MainWindow::on_actionHelp_triggered()
     bool helpNoWritten = 0;
     QDir d(QCoreApplication::applicationDirPath()+QDir::separator()+"help");
     d.makeAbsolute();
+    SDDebugMessage("void MainWindow::on_actionHelp_triggered()",d.absolutePath());
     if (d.exists() && d.entryList(QDir::Files).size())
         helpNoWritten = !QDesktopServices::openUrl(QUrl::fromUserInput(QCoreApplication::applicationDirPath()+QDir::separator()+"help"+QDir::separator()+d.entryList(QDir::Files).at(0)));
     else

@@ -13,7 +13,7 @@ void appInfo::clear()
     dir.clear();
     description.clear();
     fullDescription.clear();
-    isCheked = false;
+    isChecked = false;
     ver.clear();
     instVer.clear();
     url.clear();
@@ -53,7 +53,7 @@ appBox::appBox(QWidget *parent) : QWidget(parent), ui(new Ui::appBox)
     ui->progressBar->setMaximum(0);
     ui->progressBar->setMinimum(0);
     ui->progressBar->setValue(0);
-    connect(ui->checkBox,SIGNAL(clicked(bool)),this,SLOT(setMarkered(bool)));
+    connect(ui->checkBox,SIGNAL(clicked(bool)),this,SLOT(setChecked(bool)));
 }
 
 appBox::~appBox()
@@ -181,7 +181,7 @@ void appBox::setInfo(appInfo i)
     }
 }
 
-void appBox::startInstall()
+void appBox::startWait()
 {
     state = wait;
     ui->description->setPalette(pDefault);
@@ -195,14 +195,14 @@ void appBox::startInstall()
     ui->pushButton->setDisabled(1);
 }
 
-void appBox::startAnimation()
+void appBox::startInstall()
 {
-    state = wait;
+    state = setup;
     connect(movie,SIGNAL(frameChanged(int)),this,SLOT(updateMovie()));
-    movie->start ();
+    movie->start();
     ui->progressBar->show();
     ui->pushButton->hide();
-    ui->pushButton->setEnabled(1);
+    ui->pushButton->setDisabled(true);
 }
 
 void appBox::stopInstall(STATE st)
@@ -213,10 +213,12 @@ void appBox::stopInstall(STATE st)
     ui->pushButton->setEnabled(1);
     ui->checkBox->setEnabled(1);
     disconnect(movie,SIGNAL(frameChanged(int)),this,SLOT(updateMovie()));
+    QFileIconProvider provider;
+    QFileInfo *iconFile = new QFileInfo(info.iconString);
     switch(state)
     {
     case normal:
-        ui->checkBox->setChecked(info.isCheked = false);
+        ui->checkBox->setChecked(info.isChecked = false);
         ui->checkBox->setIcon(QIcon(":/ok.png"));
         ui->checkBox->setPalette(pGreen);
         ui->NOWbtn->hide();
@@ -237,7 +239,15 @@ void appBox::stopInstall(STATE st)
         ui->description->setText(info.description);
         ui->description->setPalette(pOrange);
         break;
+    case ready:
+        if (iconFile->exists()) ui->checkBox->setIcon(provider.icon(*iconFile));
+        ui->checkBox->setPalette(pDefault);
+        ui->NOWbtn->show();
+        ui->description->setText(info.description);
+        ui->description->setPalette(pDefault);
+        break;
     default:
+        SDDebugMessage("appBox::stopInstall(STATE st)","Coder is invalid!\nInvalid use appBox::stopInstall(STATE st)",true,iconerror);
         break;
     }
 }
@@ -297,21 +307,21 @@ void appBox::on_NOWbtn_clicked()
     emit now(this);
 }
 
-void appBox::setUnmarkered(bool mark)
+void appBox::setUnchecked(bool check)
 {
-    if (!mark) state = ready;
-    ui->checkBox->setChecked(info.isCheked = !mark);
+    if (!check) state = ready;
+    ui->checkBox->setChecked(info.isChecked = !check);
 }
 
-void appBox::setMarkered(bool mark)
+void appBox::setChecked(bool check)
 {
-    if (mark) state = ready;
-    ui->checkBox->setChecked(info.isCheked = mark);
+    if (check) state = ready;
+    ui->checkBox->setChecked(info.isChecked = check);
 }
 
-bool appBox::isMarkered()
+bool appBox::isChecked()
 {
-    return info.isCheked;
+    return info.isChecked;
 }
 
 void appBox::openUrl(QString url)

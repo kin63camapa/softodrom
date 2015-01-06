@@ -45,7 +45,7 @@ private slots:
     void on_hideButton_clicked();
     void on_showButton_clicked();
     void result(appBox*,appBox::STATE status);
-    void start(appBox* box);
+//    void start(appBox* box);
     void finish();
     void showAll();
     void hideAll();

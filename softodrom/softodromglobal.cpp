@@ -87,13 +87,17 @@ void SDDebugMessage(QString header,QString text,bool ignoreDebug, SDDebugMessage
 
 HANDLE SDRunExternal(QString app, QString parameters, QString dir, bool RunWithElevation)
 {
-    SHELLEXECUTEINFO executeInfo = {0};
+    SHELLEXECUTEINFO executeInfo;
     executeInfo.cbSize = sizeof(SHELLEXECUTEINFO);
 
     executeInfo.fMask = 0;
     executeInfo.hwnd = 0;
     if (RunWithElevation) executeInfo.lpVerb = L"runas";
-    else executeInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+    else
+    {
+        executeInfo.lpVerb = L"open";
+        executeInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+    }
     app.replace("/","\\");
     //app.replace("\\\\","\\\\?\\UNC\\");
     executeInfo.lpFile = app.toStdWString().c_str();
@@ -128,7 +132,6 @@ QString GetVer(QString fileName)
     int bResult = GetFileVersionInfo(fileName.toStdWString().c_str(), handle, infoSize, pBlock);
     if(bResult == 0)
     {
-        delete [] pBlock;
         return "ERROR: Function <GetFileVersionInfo> unsuccessful!";
     }
     // Structure used to store enumerated languages and code pages.
@@ -140,17 +143,15 @@ QString GetVer(QString fileName)
     UINT dwBytes;
     int langNumber;
     // Read the list of languages and code pages.
-    bResult = VerQueryValue(pBlock, TEXT("\\VarFileInfo\\Translation"), (LPVOID*)&lpTranslate, &dwBytes);
+    bResult = VerQueryValue(pBlock, L"\\VarFileInfo\\Translation", (LPVOID*)&lpTranslate, &dwBytes);
     if(bResult == 0)
     {
-        delete [] pBlock;
         return "ERROR: Function <VerQueryValue> for Translation unsuccessful!";
     }
     langNumber = dwBytes/sizeof(struct LANGANDCODEPAGE);
     //langNumber always must be equal 1
     if(langNumber != 1)
     {
-        delete [] pBlock;
         return QString("ERROR: Languages number: %1.").arg(langNumber);
     }
     HRESULT hr;
@@ -159,23 +160,20 @@ QString GetVer(QString fileName)
         hr = wsprintfW(strTmp, TEXT("\\StringFileInfo\\%04X%04X\\FileVersion"),lpTranslate[i].wLanguage, lpTranslate[i].wCodePage);
         if (FAILED(hr))
         {
-            delete [] pBlock;
             return "ERROR: Unable to get information in this language!";
         }
         // Retrieve file description for language and code page "i".
 
-        if (VerQueryValue(pBlock, TEXT("\\"), &lpBuffer, &dwBytes))
+        if (VerQueryValue(pBlock, L"\\", &lpBuffer, &dwBytes))
         {
             VS_FIXEDFILEINFO *fi = (VS_FIXEDFILEINFO*)lpBuffer;
             fileName.clear();//теперь это версия %)
             QTextStream(&fileName) << HIWORD(fi->dwFileVersionMS) << "." << LOWORD(fi->dwFileVersionMS) << "." << HIWORD(fi->dwFileVersionLS) << "." << LOWORD(fi->dwFileVersionLS);
         }else
         {
-            delete [] pBlock;
             return "ERROR: Function <VerQueryValue> for StringFileInfo unsuccessful!";
         }
     }
-    delete [] pBlock;
     return fileName;
 }
 
@@ -242,7 +240,8 @@ bool OSINFO::isWow64()
         error("Can not GetModuleHandle from kernel32.dll\nProbably, system is X86!\nCoder id Invalid!");
         return 0;
     }
-    if(fnIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(module, "IsWow64Process"))
+    fnIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(module, "IsWow64Process");
+    if(fnIsWow64Process)
     {
         if (!fnIsWow64Process(GetCurrentProcess(),&bIsWow64))
         {
@@ -398,9 +397,9 @@ bool OSINFO::init()
       ULONG  dwBuildNumber;
       ULONG  dwPlatformId;
       WCHAR  szCSDVersion[128];
-    } RTL_OSVERSIONINFOW, *PRTL_OSVERSIONINFOW;
+    } *PRTL_OSVERSIONINFOW;
 
-    typedef struct _RTL_OSVERSIONINFOEXW {
+    struct _RTL_OSVERSIONINFOEXW {
       ULONG  dwOSVersionInfoSize;
       ULONG  dwMajorVersion;
       ULONG  dwMinorVersion;
@@ -412,7 +411,7 @@ bool OSINFO::init()
       USHORT  wSuiteMask;
       UCHAR  wProductType;
       UCHAR  wReserved;
-    } RTL_OSVERSIONINFOEXW, *PRTL_OSVERSIONINFOEXW;
+    };
 
     BOOL (*RtlGetVersion)(PRTL_OSVERSIONINFOW);
 

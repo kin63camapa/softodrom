@@ -44,3 +44,5 @@ RESOURCES += \
 LIBS += \
     -L version.lib -lversion \
     -L ntdll.lib -lntdll
+OTHER_FILES += softodrom.rc \
+    softodrom64.rc

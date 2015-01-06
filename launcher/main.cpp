@@ -13,7 +13,8 @@ bool isWow64()
         //error("Can not GetModuleHandle from kernel32.dll\nProbably, system is X86!\nCoder id Invalid!");
         return 0;
     }
-    if(fnIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(module, "IsWow64Process"))
+    fnIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(module, "IsWow64Process");
+    if(fnIsWow64Process)
     {
         if (!fnIsWow64Process(GetCurrentProcess(),&bIsWow64))
         {
@@ -36,13 +37,12 @@ void RunWithElevation(
         const std::wstring &directory = L"",
         bool RunWithElevation = true)
 {
-    SHELLEXECUTEINFO executeInfo = {0};
+    SHELLEXECUTEINFO executeInfo;
     executeInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-
     executeInfo.fMask = 0;
     executeInfo.hwnd = hwnd;
     if (RunWithElevation) executeInfo.lpVerb = L"runas";
-
+    else executeInfo.lpVerb = L"open";
     executeInfo.lpFile = app.c_str();
     executeInfo.lpParameters = parameters.empty()
         ? 0 : parameters.c_str();

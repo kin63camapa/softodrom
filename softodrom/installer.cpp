@@ -23,14 +23,12 @@ bool isProcessRunning(HANDLE process)
 
 HANDLE Installer::SDRunExternalEx(QString cmd, QString dir,appBox *box)
 {
-    STARTUPINFO si = {sizeof(si)};
+    STARTUPINFO si;
     PROCESS_INFORMATION pi;
-    WCHAR command[MAX_PATH];
-    WCHAR directory[MAX_PATH];
+    WCHAR command[MAX_PATH*8] = {0};
+    WCHAR directory[MAX_PATH] = {0};
     cmd.toWCharArray(command);
     dir.toWCharArray(directory);
-    command[cmd.size()] = '\0';
-    directory[dir.size()] = '\0';
     if (!CreateProcess(NULL, command, NULL, NULL, FALSE, 0, NULL, directory, &si, &pi))
     {
         box->setMessage(QString::fromUtf8("Выполнить %1 в %2 не удалось.\n%3.").arg(cmd).arg(dir).arg(code2text(GetLastError())));
@@ -39,7 +37,6 @@ HANDLE Installer::SDRunExternalEx(QString cmd, QString dir,appBox *box)
             if (status == appBox::normal) status = appBox::warning;
             QString tmp = dir+QDir::separator()+cmd;
             tmp.toWCharArray(command);
-            command[tmp.size()] = '\0';
             if (!CreateProcess(NULL, command, NULL, NULL, FALSE, 0, NULL, directory, &si, &pi))
             {
                 box->setMessage(QString::fromUtf8("Выполнить %1 в %2 не удалось.\n%3.").arg(cmd).arg(dir).arg(code2text(GetLastError())));
@@ -65,7 +62,8 @@ void Installer::run()
 
     foreach(appBox *box,list)
     {
-        emit startInstall(box);
+//        emit startInstall(box);
+        box->startInstall();
         box->setMessage("\n");
         status = appBox::normal;
         foreach (QString command, box->getInfo().commands)

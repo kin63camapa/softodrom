@@ -10,7 +10,7 @@ public:
     QString name;
     QString description;
     QString fullDescription;
-    bool isCheked;
+    bool isChecked;
     QString ver;
     QString instVer;
     QString url;
@@ -41,26 +41,23 @@ public:
     {
         normal = 0,
         error = 1,
-        warning = 3,
+        warning = 2,
         ready = 100,
+        setup = 3,
         wait = 99
     } state;
-    bool isMarkered();
-    bool isUnmarkered(){return !isMarkered();}
+    bool isChecked();
+    bool isUnchecked(){return !isChecked();}
 public slots:
+    void startWait();
     void startInstall();
-    void startAnimation();
     void stopInstall(STATE st);
-    void setMarkered(bool mark = true);
-    void setUnmarkered(bool mark = true);
+    void setChecked(bool check = true);
+    void setUnchecked(bool check = true);
     void clearEmptyCommandsAndReverse();
     void clearEmptyCommands();
     void updateMovie();
     void setMessage(QString message);
-    //void setDescription(QString desc);
-    //void setImage(QPixmap image);
-    //void setMarkered();
-    //void setUnmarkered();
 signals:
     void now(appBox*app);
 private slots:

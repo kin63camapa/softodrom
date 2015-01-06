@@ -293,7 +293,7 @@ void Scaner::run()
             tmpAppInfo.name = tmpFileInfo->dir().dirName();
             if (AppSettings->value("UseIconsFromExe").toBool()) tmpAppInfo.iconString = file;
             tmpAppInfo.description = tmpFileInfo->fileName();
-            tmpAppInfo.isCheked = true;
+            tmpAppInfo.isChecked = true;
             tmpAppInfo.ver = GetVer(tmpFileInfo->absoluteFilePath().replace("/","\\"));
             if (tmpAppInfo.ver.contains("ERROR")) tmpAppInfo.ver.clear();
             tmpAppInfo.commands.push_back(file.replace("/","\\"));
@@ -614,7 +614,7 @@ appInfo Scaner::parseBatchFile(QString file,appInfo current)
         //current.description = QFileInfo(file).fileName();
         current.description =  current.name;
         current.iconString = file;
-        current.isCheked = true;
+        current.isChecked = true;
         current.kits.push_back("kit");
     }
     current.commands.push_back(file.replace("/","\\"));

@@ -16,7 +16,7 @@ public:
 protected:
     void run();
 signals:
-    void startInstall(appBox*);
+//    void startInstall(appBox*);
     void result(appBox*,appBox::STATE);
     void finish();
 public slots:
