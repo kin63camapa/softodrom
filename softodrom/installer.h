@@ -16,16 +16,13 @@ public:
 protected:
     void run();
 signals:
-//    void startInstall(appBox*);
     void result(appBox*,appBox::STATE);
     void finish();
-public slots:
 private:
     QString target(QString command);
     QString args(QString command);
     QString dropQuotes(QString command);
     QList<appBox*> list;
-    QTimer *killTimer;
     HANDLE SDRunExternalEx(QString cmd, QString dir,appBox *box);
     appBox::STATE status;
 };

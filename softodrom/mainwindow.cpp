@@ -17,13 +17,11 @@ MainWindow::MainWindow(QWidget *parent) :
     settings = new Settings();
     connect(settings,SIGNAL(showInfo(bool)),this,SLOT(showInfo(bool)));
     this->setWindowTitle(QString::fromUtf8("Софтодром"));
-    //ui->settingsAction->setEnabled(AppSettings->isWritable());
     ui->showButton->hide();
     AppSettings->beginGroup("View");
     if (!AppSettings->value("ShowInfoBlock").toBool()) ui->infoBox->hide();
     AppSettings->endGroup();
     this->showMaximized();
-    //rebulildBoxes();//а оно тут надо?
     scaner = new Scaner(this);
     connect(scaner,SIGNAL(finished()),this,SLOT(scanComplete()));
     connect(scaner,SIGNAL(terminated()),this,SLOT(scanComplete()));
@@ -37,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent) :
     installer = new Installer(this);
     connect(installer,SIGNAL(result(appBox*,appBox::STATE)),
             this,SLOT(result(appBox*,appBox::STATE)));
-    //connect(installer,SIGNAL(startInstall(appBox*)),this,SLOT(start(appBox*)));
     connect(installer,SIGNAL(finish()),this,SLOT(finish()));
 
     showAllAction =  new QAction(QString::fromUtf8("Показать все"),this);

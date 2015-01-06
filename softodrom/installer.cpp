@@ -7,7 +7,7 @@ Installer::Installer(QObject *parent) :
     QThread(parent)
 {
     qRegisterMetaType<appBox::STATE>("appBox::STATE");
-    killTimer = new QTimer(this);
+    status = appBox::normal;
 }
 
 void Installer::setApps(QList<appBox *> apps)
@@ -16,16 +16,11 @@ void Installer::setApps(QList<appBox *> apps)
     list = apps;
 }
 
-bool isProcessRunning(HANDLE process)
-{
-   return WaitForSingleObject( process, 0 ) == WAIT_TIMEOUT;
-}
-
 HANDLE Installer::SDRunExternalEx(QString cmd, QString dir,appBox *box)
 {
-    STARTUPINFO si;
+    STARTUPINFO si = {0};
     PROCESS_INFORMATION pi;
-    WCHAR command[MAX_PATH*8] = {0};
+    WCHAR command[MAX_PATH*4] = {0};
     WCHAR directory[MAX_PATH] = {0};
     cmd.toWCharArray(command);
     dir.toWCharArray(directory);
@@ -62,7 +57,6 @@ void Installer::run()
 
     foreach(appBox *box,list)
     {
-//        emit startInstall(box);
         box->startInstall();
         box->setMessage("\n");
         status = appBox::normal;
