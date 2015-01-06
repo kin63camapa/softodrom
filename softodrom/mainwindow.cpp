@@ -588,6 +588,7 @@ void MainWindow::on_actionAbout_triggered()
     QString string;
     QTextStream(&string) << "<samp>"
                          << "<pre>applicationName     : " << QCoreApplication::applicationName()
+                         << " <br>appHommePage        : " << "<a href=https://github.com/kin63camapa/softodrom>github.com/kin63camapa/softodrom</a>"
                          << " <br>applicationVersion  : " << QCoreApplication::applicationVersion()
                          << " <br>organizationName    : " << QCoreApplication::organizationName()
                          << " <br>organizationDomain  : " << QCoreApplication::organizationDomain()
@@ -617,7 +618,10 @@ void MainWindow::on_actionAbout_triggered()
             QTextStream(&string) << " <br>is64Build           : FALSE" ;
     }
     QTextStream(&string)<< "<br></pre></samp>";
-    QMessageBox::information(this,QCoreApplication::applicationName(),string,QString::fromUtf8("Угу"));
+    QMessageBox *box = new QMessageBox(QMessageBox::Information,QCoreApplication::applicationName(),string,QMessageBox::Yes);
+    box->button(QMessageBox::Yes)->setText(QString::fromUtf8("Угу"));
+    box->setTextFormat(Qt::RichText);
+    box->show();
 }
 
 void MainWindow::on_niniteOpenBtn_clicked()

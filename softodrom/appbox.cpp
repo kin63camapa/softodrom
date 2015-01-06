@@ -198,11 +198,11 @@ void appBox::startWait()
 void appBox::startInstall()
 {
     state = setup;
-    //connect(movie,SIGNAL(frameChanged(int)),this,SLOT(updateMovie()));
-    //movie->start();
+    connect(movie,SIGNAL(frameChanged(int)),this,SLOT(updateMovie()));
+    movie->start();
     ui->progressBar->show();
     ui->pushButton->hide();
-    ui->pushButton->setDisabled(true);
+    ui->pushButton->setEnabled(true);
 }
 
 void appBox::stopInstall(STATE st)
