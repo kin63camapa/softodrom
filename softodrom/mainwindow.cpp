@@ -304,17 +304,9 @@ void MainWindow::newApp(appInfo app)
 {
     appBox *tmp;
     tmp = new appBox();
-    if (app.kits.size())
-    {
-        tmp->setInfo(app);
-        kits += tmp->getInfo().kits;
-        kits.removeDuplicates();
-    }
-//    else
-//    {
-//        app.kits.push_back("nogroup");
-//        tmp->setInfo(app);
-//    }
+    tmp->setInfo(app);
+    kits += tmp->getInfo().kits;
+    kits.removeDuplicates();
     connect(tmp,SIGNAL(now(appBox*)),this,SLOT(installOne(appBox*)));
     connect(tmp,SIGNAL(avirChecked(appBox*)),this,SLOT());
     connect(tmp,SIGNAL(conflictsCheck(QStringList)),this,SLOT());
