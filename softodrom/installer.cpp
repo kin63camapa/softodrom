@@ -106,6 +106,11 @@ void Installer::run()
             }
             CloseHandle(process);
         }
+        if (box->getInfo().ver == verExpand(box->getInfo().instVer))
+        {
+            if (status == appBox::error) status = appBox::warning;
+            box->setMessage(QString::fromUtf8("Проверка установленной верссии %1 выполнена успешно!").arg(box->getInfo().ver));
+        }
         emit result(box,status);
     }
     emit finish();

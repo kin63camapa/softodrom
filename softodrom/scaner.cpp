@@ -46,6 +46,8 @@ void Scaner::run()
     if (AppSettings->value("RecursiveSearch").toBool())
     {
         passedDirs += getTree(updateFolder);
+        passedDirs += getTree(QCoreApplication::applicationDirPath());
+        passedDirs += getTree(updateFolder.absolutePath());
     }
     foreach (QString file, files)
     {
@@ -524,46 +526,9 @@ appInfo Scaner::parseInfoTxt(QString file,appInfo current)
     if (infoTxt.contains("VerCheck"))
     {
         current.instVer = infoTxt.value("VerCheck").toString();
-        if (!current.instVer.indexOf("FROMFILE:"))
-        {
-            current.instVer.replace("%name%",current.name);
-            current.instVer.replace("%key%",current.key);
-            if (OSinfo.is64)
-            {//сначала самые ходовые
-                if (OSinfo.Win >= OSINFO::W7X64)
-                {
-                    current.instVer.replace("%programfiles%","%ProgramW6432%");
-                    current.instVer.replace("%PROGRAMFILES%","%ProgramW6432%");
-                }else
-                {
-                    current.instVer.replace("%programfiles%","%SYSTEMDRIVE%\\Program Files");
-                    current.instVer.replace("%PROGRAMFILES%","%SYSTEMDRIVE%\\Program Files");
-                }
-            }
-            else
-            {
-                current.instVer.replace("%programfiles(x86)%","%PROGRAMFILES%");
-                current.instVer.replace("%PROGRAMFILES(x86)%","%PROGRAMFILES%");
-            }
-            QStringRef vfile(&current.instVer, 9, current.instVer.size()-9);
-            current.instVer = GetVer(ExpandEnvironmentString(vfile.toString()));
-            if (!current.instVer.indexOf("ERROR:"))
-            {
-                current.instVer = infoTxt.value("VerCheck").toString();
-                current.instVer = GetVer(ExpandEnvironmentString(vfile.toString()));
-                if (!current.instVer.indexOf("ERROR:"))
-                {
-                    if (OSinfo.is64 && OSinfo.Win < OSINFO::W7X86)
-                    {
-                        SDDebugMessage("Coder is invalid!",QString::fromUtf8(
-                                          "VerCheck failed! Probably it could happen if the file does not exist"
-                                          " or folder \"Program Files\" has been moved. File %1").arg(file.replace("/","\\")),
-                                      true,iconwarning);
-                    }
-                    current.instVer = infoTxt.value("VerCheck").toString();
-                }
-            }
-        }
+        current.instVer.replace("%directory%",current.dir);
+        current.instVer.replace("%name%",current.name);
+        current.instVer.replace("%key%",current.key);
     }
     if (infoTxt.contains("Url"))
     {

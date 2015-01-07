@@ -485,6 +485,50 @@ bool OSINFO::init()
     return MajorVersion;
 }
 
+QString verExpand(QString string)
+{
+    QString current = string;
+    if (!current.indexOf("FROMFILE:"))
+    {
+//            if (OSinfo.is64)
+//            {//сначала самые ходовые
+//                if (OSinfo.Win >= OSINFO::W7X64)
+//                {
+//                    current.replace("%programfiles%","%ProgramW6432%");
+//                    current.replace("%PROGRAMFILES%","%ProgramW6432%");
+//                }else
+//                {
+//                    current.replace("%programfiles%","%SYSTEMDRIVE%\\Program Files");
+//                    current.replace("%PROGRAMFILES%","%SYSTEMDRIVE%\\Program Files");
+//                }
+//            }
+//            else
+//            {
+//                current.replace("%programfiles(x86)%","%PROGRAMFILES%");
+//                current.replace("%PROGRAMFILES(x86)%","%PROGRAMFILES%");
+//            }
+        QStringRef vfile(&current, 9, current.size()-9);
+        current = GetVer(ExpandEnvironmentString(vfile.toString()));
+        if (!current.indexOf("ERROR:"))
+        {
+            current = string;
+            current = GetVer(ExpandEnvironmentString(vfile.toString()));
+            if (!current.indexOf("ERROR:"))
+            {
+                if (OSinfo.is64 && OSinfo.Win < OSINFO::W7X86)
+                {
+                    SDDebugMessage(QString::fromUtf8("verExpand(QString %1)").arg(string),QString::fromUtf8(
+                                      "VerCheck failed! Probably it could happen if the file does not exist"
+                                      " or folder \"Program Files\" has been moved. File %1").arg(current),
+                                  true,iconwarning);
+                }
+                current = "Не найдено";
+            }
+        }
+    }
+    return current;
+}
+
 //using namespace std;
 //#include <comdef.h>
 //#include <Wbemidl.h>
@@ -925,20 +969,5 @@ bool OSINFO::init()
 //         return 4;
 //   }
 //}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

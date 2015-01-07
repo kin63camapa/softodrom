@@ -112,8 +112,10 @@ void appBox::setInfo(appInfo i)
     if (info.ver.size()) ui->version->setText(info.ver);
     if (info.instVer.size())
     {
-        ui->installedVer->setText(info.instVer);
-        if (info.ver == info.instVer)
+        tmp.clear();
+        tmp = verExpand(info.instVer);
+        ui->installedVer->setText(tmp);
+        if (info.ver == tmp)
         {
             stopInstall(normal);
         }

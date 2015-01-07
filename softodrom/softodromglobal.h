@@ -9,6 +9,7 @@ extern QString GetVer(QString fileName);
 extern void hideConsole();
 extern QString SDtranslateKit(QString kit);
 extern QString ExpandEnvironmentString(QString str);
+extern QString verExpand(QString string);
 
 enum SDDebugMessageIco
 {
@@ -19,6 +20,7 @@ enum SDDebugMessageIco
 };
 extern void SDDebugMessage(QString header,QString text,bool ignoreDebug = false, SDDebugMessageIco ico = iconunformation);
 extern HANDLE SDRunExternal(QString app, QString parameters = "",QString dir = "",bool RunWithElevation = true);
+
 extern struct OSINFO
 {
    enum WIN

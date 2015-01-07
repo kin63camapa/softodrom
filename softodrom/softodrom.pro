@@ -42,7 +42,7 @@ FORMS += \
 RESOURCES += \
     resources.qrc
 LIBS += \
-    -L version.lib -lversion \
-    -L ntdll.lib -lntdll
+-L version.lib -lversion
 OTHER_FILES += softodrom.rc \
-    softodrom64.rc
+    softodrom64.rc \
+    ../help/info.txt
