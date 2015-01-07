@@ -11,6 +11,7 @@ public:
     QString description;
     QString fullDescription;
     bool isChecked;
+    bool isAvir;
     QString ver;
     QString instVer;
     QString url;
@@ -21,6 +22,7 @@ public:
     QStringList depends;
     QStringList addons;
     QStringList commands;
+    QStringList conflicts;
     int killTimer;
     void clear();
 };
@@ -60,6 +62,9 @@ public slots:
     void setMessage(QString message);
 signals:
     void now(appBox*app);
+    void avirChecked(appBox*app);
+    void conflictsCheck(QStringList conflicts);
+    void dependsNeed(QStringList depends);
 private slots:
     void on_pushButton_clicked();
     void on_NOWbtn_clicked();

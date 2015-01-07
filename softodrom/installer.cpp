@@ -110,6 +110,12 @@ void Installer::run()
         {
             if (status == appBox::error) status = appBox::warning;
             box->setMessage(QString::fromUtf8("Проверка установленной верссии %1 выполнена успешно!").arg(box->getInfo().ver));
+        }else
+        {
+            if (box->getInfo().instVer.size())
+            {
+                box->setMessage(QString::fromUtf8("Проверка установленной версии %1 не удалась!").arg(box->getInfo().instVer));
+            }
         }
         emit result(box,status);
     }

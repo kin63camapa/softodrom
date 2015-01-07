@@ -19,7 +19,7 @@ QString SDtranslateKit(QString kit)
     kit.replace("runtimes",QString::fromUtf8("Среды исполнения"));
     kit.replace("home",QString::fromUtf8("Для дома"));
     kit.replace("kit",QString::fromUtf8("Поднаборы"));
-    kit.replace("nogroup",QString::fromUtf8("Вне наборов"));
+    kit.replace("antiviruses",QString::fromUtf8("Антивирусы"));
     kit.replace("nogroup",QString::fromUtf8("Вне наборов"));
     kit.replace("nogroup",QString::fromUtf8("Вне наборов"));
     return kit;
@@ -421,12 +421,10 @@ bool OSINFO::init()
     _RTL_OSVERSIONINFOEXW osver;
     ZeroMemory(&osver, sizeof(_RTL_OSVERSIONINFOEXW));
     osver.dwOSVersionInfoSize = sizeof(_RTL_OSVERSIONINFOEXW);
-    HINSTANCE dllHandle = NULL;
-    dllHandle = LoadLibrary(TEXT("ntdll.dll"));
-    if (NULL != dllHandle)
+    HINSTANCE dllHandle;
+    if ((dllHandle = LoadLibrary(TEXT("ntdll.dll"))))
     {
-        RtlGetVersion = (BOOL(*)(PRTL_OSVERSIONINFOW))GetProcAddress(dllHandle,"RtlGetVersion");
-        if (NULL != RtlGetVersion)
+        if ((RtlGetVersion = (BOOL(*)(PRTL_OSVERSIONINFOW))GetProcAddress(dllHandle,"RtlGetVersion")))
         {
             if(RtlGetVersion((_RTL_OSVERSIONINFOW *) &osver))
             {
@@ -522,7 +520,6 @@ QString verExpand(QString string)
                                       " or folder \"Program Files\" has been moved. File %1").arg(current),
                                   true,iconwarning);
                 }
-                current = "Не найдено";
             }
         }
     }

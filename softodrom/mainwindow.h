@@ -55,6 +55,9 @@ private slots:
 
     void on_drpOpenBtn_clicked();
 
+    void avirChecked(appBox*app);
+    void conflictsCheck(QStringList conflicts);
+    void dependsNeed(QStringList depends);
 private:
     QAction *showAllAction;
     QAction *hideAllAction;

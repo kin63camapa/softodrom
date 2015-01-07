@@ -306,14 +306,24 @@ void MainWindow::newApp(appInfo app)
     tmp = new appBox();
     if (app.kits.size())
     {
-        kits += app.kits;
+        tmp->setInfo(app);
+        kits += tmp->getInfo().kits;
         kits.removeDuplicates();
-    }else
-    {
-        app.kits.push_back("nogroup");
     }
-    tmp->setInfo(app);
+//    else
+//    {
+//        app.kits.push_back("nogroup");
+//        tmp->setInfo(app);
+//    }
     connect(tmp,SIGNAL(now(appBox*)),this,SLOT(installOne(appBox*)));
+    connect(tmp,SIGNAL(avirChecked(appBox*)),this,SLOT());
+    connect(tmp,SIGNAL(conflictsCheck(QStringList)),this,SLOT());
+    connect(tmp,SIGNAL(dependsNeed(QStringList)),this,SLOT());
+    if (tmp->getInfo().isAvir)
+    {
+        //TODO проверка антивируса
+        ;
+    }
     soft.push_back(tmp);
 }
 
@@ -534,18 +544,10 @@ void MainWindow::on_markedSoftOnly_triggered()
     {
         tmp->setChecked();
     }
-    foreach(appBox* tmp,update)
-    {
-        tmp->setUnchecked();
-    }
 }
 
 void MainWindow::on_markedUpdatesOnly_triggered()
 {
-    foreach(appBox* tmp,soft)
-    {
-        tmp->setUnchecked();
-    }
     foreach(appBox* tmp,update)
     {
         tmp->setChecked();
@@ -632,4 +634,31 @@ void MainWindow::on_niniteOpenBtn_clicked()
 void MainWindow::on_drpOpenBtn_clicked()
 {
     SDRunExternal(AppSettings->value("DRPDir").toString()+QDir::separator()+"DriverPackSolution.exe");
+}
+
+void MainWindow::avirChecked(appBox *app)
+{
+    foreach(appBox* tmp,soft)
+    {
+        if (tmp->getInfo().kits.contains("antiviruses"))
+        {
+            if (tmp != app)
+            {
+                tmp->setUnchecked();
+                QMessageBox::information(this,"Контроль антивирусов",QString::fromUtf8("Обратите внимание в систему можно установить только 1 антивирус!\n"
+                                                                     "Так как для установки был отмечен продукт %1,\n"
+                                                                     "Установка %2 была отменена!").arg(app->getInfo().name).arg(tmp->getInfo().name),QString::fromUtf8("Угу"));
+            }
+        }
+    }
+}
+
+void MainWindow::conflictsCheck(QStringList conflicts)
+{
+    ;
+}
+
+void MainWindow::dependsNeed(QStringList depends)
+{
+    ;
 }

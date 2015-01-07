@@ -14,6 +14,7 @@ void appInfo::clear()
     description.clear();
     fullDescription.clear();
     isChecked = false;
+    isAvir = false;
     ver.clear();
     instVer.clear();
     url.clear();
@@ -23,9 +24,9 @@ void appInfo::clear()
     depends.clear();
     addons.clear();
     commands.clear();
+    conflicts.clear();
     killTimer = 6400;
 }
-
 
 appBox::appBox(QWidget *parent) : QWidget(parent), ui(new Ui::appBox)
 {
@@ -75,11 +76,34 @@ void appBox::setInfo(appInfo i)
     {
         foreach(QString t,info.kits)
         {
+            if (tmp == "antiviruses")
+            {
+                info.isAvir = true;
+                ui->NOWbtn->hide();
+                if (info.kits.size() != 1)
+                {
+                    SDDebugMessage("appBox::setInfo(appInfo)",
+                                   QString("Запрещено включать антивирус в другие группы программ!\nОшибка при разборе %1\\info.txt").arg(info.dir),true,iconerror);
+                    tmp = "antivirusesss";
+                    info.kits.clear();
+                    info.kits.append("antiviruses");
+                    break;
+                }
+            }
+//            if (tmp == "nogroup")
+//            {
+//                ;
+//            }
             tmp += t;
             tmp += ", ";
         }
         tmp.resize(tmp.size()-2);
         ui->kits->setText(SDtranslateKit(tmp));
+    }
+    else
+    {
+        info.kits.append("nogroup");
+        ui->kits->setText(SDtranslateKit("nogroup"));
     }
     clearEmptyCommands();
     if (info.commands.size())
@@ -114,6 +138,10 @@ void appBox::setInfo(appInfo i)
     {
         tmp.clear();
         tmp = verExpand(info.instVer);
+        if (!tmp.indexOf("ERROR:"))
+        {
+            tmp = "Не найдено";
+        }
         ui->installedVer->setText(tmp);
         if (info.ver == tmp)
         {
@@ -311,14 +339,32 @@ void appBox::on_NOWbtn_clicked()
 
 void appBox::setUnchecked(bool check)
 {
-    if (!check) state = ready;
-    ui->checkBox->setChecked(info.isChecked = !check);
+    setChecked(!check);
 }
 
 void appBox::setChecked(bool check)
 {
-    if (check) state = ready;
     ui->checkBox->setChecked(info.isChecked = check);
+    if (check)
+    {
+        state = ready;
+        if (info.depends.size())
+        {
+            emit dependsNeed(info.depends);
+        }
+        if (info.conflicts.size())
+        {
+            emit conflictsCheck(info.conflicts);
+        }
+        if (info.isAvir)
+        {
+            emit avirChecked(this);
+        }
+        if (info.addons.size())
+        {
+
+        }
+    }
 }
 
 bool appBox::isChecked()
