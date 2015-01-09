@@ -1,3 +1,9 @@
+#ifdef WIN64
+#define BITS 64
+#else
+#define BITS 32
+#endif
+
 #include <QtGui/QApplication>
 #include <QDebug>
 #include <QMessageBox>
@@ -9,6 +15,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    a.addLibraryPath(a.applicationDirPath()+QDir::separator()+"dll"+QString::number(BITS));
     a.setEffectEnabled(Qt::UI_AnimateMenu);
     a.setEffectEnabled(Qt::UI_FadeMenu);
     a.setEffectEnabled(Qt::UI_AnimateCombo);

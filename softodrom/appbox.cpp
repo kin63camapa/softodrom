@@ -140,7 +140,7 @@ void appBox::setInfo(appInfo i)
         tmp = verExpand(info.instVer);
         if (!tmp.indexOf("ERROR:"))
         {
-            tmp = "Не найдено";
+            tmp = QString::fromUtf8("Не найдено");
         }
         ui->installedVer->setText(tmp);
         if (info.ver == tmp)

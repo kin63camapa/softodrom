@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->startSetupAction,SIGNAL(triggered()),this,SLOT(on_startStopButton_clicked()));
     connect(ui->rescanAction,SIGNAL(triggered()),this,SLOT(on_renewButton_clicked()));
     connect(ui->settingsAction,SIGNAL(triggered()),this,SLOT(showSettings()));
+    aboutBox = new AboutBox();
     if (!QFileInfo(AppSettings->value("DRPDir").toString()+QDir::separator()+"DriverPackSolution.exe").exists())
         ui->drpOpenBtn->hide();
     rescanApps();
@@ -218,15 +219,6 @@ void MainWindow::scanComplete()
         connect(tmpMenu,SIGNAL(setUnmarked(QString)),this,SLOT(unmarkedKit(QString)));
         kitsMenus.push_back(tmpMenu);
     }
-
-    tmpMenu = new KitMenu(ui->menu);
-    tmpMenu->setKitName("nogroup");
-    ui->menu->addMenu(tmpMenu);
-    connect(tmpMenu,SIGNAL(enable(QString)),this,SLOT(enableKit(QString)));
-    connect(tmpMenu,SIGNAL(disable(QString)),this,SLOT(disableKit(QString)));
-    connect(tmpMenu,SIGNAL(setMarked(QString)),this,SLOT(markedKit(QString)));
-    connect(tmpMenu,SIGNAL(setUnmarked(QString)),this,SLOT(unmarkedKit(QString)));
-    kitsMenus.push_back(tmpMenu);
     rebulildBoxes();
     ui->startSetupAction->setDisabled(0);
     ui->startStopButton->setDisabled(0);
@@ -308,9 +300,9 @@ void MainWindow::newApp(appInfo app)
     kits += tmp->getInfo().kits;
     kits.removeDuplicates();
     connect(tmp,SIGNAL(now(appBox*)),this,SLOT(installOne(appBox*)));
-    connect(tmp,SIGNAL(avirChecked(appBox*)),this,SLOT());
-    connect(tmp,SIGNAL(conflictsCheck(QStringList)),this,SLOT());
-    connect(tmp,SIGNAL(dependsNeed(QStringList)),this,SLOT());
+    connect(tmp,SIGNAL(avirChecked(appBox*)),this,SLOT(avirChecked(appBox*)));
+    connect(tmp,SIGNAL(conflictsCheck(QStringList)),this,SLOT(conflictsCheck(QStringList)));
+    connect(tmp,SIGNAL(dependsNeed(QStringList)),this,SLOT(dependsNeed(QStringList)));
     if (tmp->getInfo().isAvir)
     {
         //TODO проверка антивируса
@@ -579,43 +571,7 @@ void MainWindow::on_actionHelp_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QString string;
-    QTextStream(&string) << "<samp>"
-                         << "<pre>applicationName     : " << QCoreApplication::applicationName()
-                         << " <br>appHommePage        : " << "<a href=https://github.com/kin63camapa/softodrom>github.com/kin63camapa/softodrom</a>"
-                         << " <br>applicationVersion  : " << QCoreApplication::applicationVersion()
-                         << " <br>organizationName    : " << QCoreApplication::organizationName()
-                         << " <br>organizationDomain  : " << QCoreApplication::organizationDomain()
-                         << " <br>applicationPid      : " << QCoreApplication::applicationPid()
-                         << " <br>applicationDirPath  : " << QCoreApplication::applicationDirPath().replace("/","\\")
-                         << " <br>applicationFilePath : " << QCoreApplication::applicationFilePath().replace("/","\\")
-                         << " <br>qtVersionString     : " << QT_VERSION_STR;
-    if (AppSettings->isWritable())
-        QTextStream(&string) << " <br>configIsWritable    : <span style=\"color:#00ff00;\">TRUE</span>" ;
-    else
-        QTextStream(&string) << " <br>configIsWritable    : <span style=\"color:#ff0000;\">FALSE</span>" ;
-    if (OSinfo.isAdmin)
-        QTextStream(&string) << " <br>runAsAdministrator  : <span style=\"color:#00ff00;\">TRUE</span>" ;
-    else
-        QTextStream(&string) << " <br>runAsAdministrator  : <span style=\"color:#ff0000;\">FALSE</span>" ;
-    if (OSinfo.is64)
-    {
-        if (OSinfo.is64build)
-            QTextStream(&string) << " <br>is64Build           : <span style=\"color:#00ff00;\">TRUE</span>" ;
-        else
-            QTextStream(&string) << " <br>is64Build           : <span style=\"color:#ff0000;\">FALSE</span>" ;
-    }else
-    {
-        if (OSinfo.is64build)
-            QTextStream(&string) << " <br>is64Build           : TRUE" ;
-        else
-            QTextStream(&string) << " <br>is64Build           : FALSE" ;
-    }
-    QTextStream(&string)<< "<br></pre></samp>";
-    QMessageBox *box = new QMessageBox(QMessageBox::Information,QCoreApplication::applicationName(),string,QMessageBox::Yes);
-    box->button(QMessageBox::Yes)->setText(QString::fromUtf8("Угу"));
-    box->setTextFormat(Qt::RichText);
-    box->show();
+    aboutBox->show();
 }
 
 void MainWindow::on_niniteOpenBtn_clicked()

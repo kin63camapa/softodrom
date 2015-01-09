@@ -1,5 +1,6 @@
 #ifndef SOFTODROMGLOBAL_H
 #define SOFTODROMGLOBAL_H
+
 #include <QtCore>
 typedef void *HANDLE;
 

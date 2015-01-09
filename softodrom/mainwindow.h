@@ -7,6 +7,7 @@
 #include "settings.h"
 #include "kitmenu.h"
 #include "installer.h"
+#include "aboutbox.h"
 
 namespace Ui {
 class MainWindow;
@@ -59,6 +60,7 @@ private slots:
     void conflictsCheck(QStringList conflicts);
     void dependsNeed(QStringList depends);
 private:
+    AboutBox *aboutBox;
     QAction *showAllAction;
     QAction *hideAllAction;
     QStringList kits;

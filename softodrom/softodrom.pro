@@ -25,7 +25,9 @@ SOURCES += \
     kitmenu.cpp \
     installer.cpp \
     softodromglobal.cpp \
-    errcodes.cpp
+    errcodes.cpp \
+    aboutbox.cpp \
+    easteregg.cpp
 HEADERS  += \
     mainwindow.h \
     appbox.h \
@@ -34,15 +36,18 @@ HEADERS  += \
     kitmenu.h \
     installer.h \
     softodromglobal.h \
-    errcodes.h
+    errcodes.h \
+    aboutbox.h
 FORMS += \
     mainwindow.ui \
     appbox.ui \
     settings.ui
 RESOURCES += \
     resources.qrc
+
 LIBS += \
--L version.lib -lversion
+-L version.lib -lversion \
+-L winmm.lib -lwinmm
 OTHER_FILES += softodrom.rc \
     softodrom64.rc \
     ../help/info.txt

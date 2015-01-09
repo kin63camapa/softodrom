@@ -1,7 +1,12 @@
 #include "errcodes.h"
+#include <windows.h>
 
 extern QString code2text(unsigned long code)
 {
+    TCHAR lpBuffer[MAX_PATH] = {0};
+    if (FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,NULL,code,LANG_RUSSIAN,lpBuffer,MAX_PATH-1,NULL))
+        return QString::fromWCharArray(lpBuffer);
+
     if (code == 0) return QString::fromUtf8("Операция успешно завершена");
     if (code == 1) return QString::fromUtf8("Неверная функция");
     if (code == 2) return QString::fromUtf8("Не удается найти указанный файл");
@@ -139,6 +144,7 @@ extern QString code2text(unsigned long code)
     if (code == 183) return QString::fromUtf8("Невозможно создать файл, так как он уже существует");
     if (code == 186) return QString::fromUtf8("Передан неверный флаг");
     if (code == 187) return QString::fromUtf8("Не найдено указанное имя системного семафора");
+    if (code == 193) return QString::fromUtf8("Неподдерживаемый формат исполняемого файла");
     if (code == 196) return QString::fromUtf8("Операционная система не может запустить это приложение");
     if (code == 197) return QString::fromUtf8("Конфигурация операционной системы не рассчитана на запуск этого приложения");
     if (code == 199) return QString::fromUtf8("Операционная система не может запустить это приложение");
@@ -3434,5 +3440,7 @@ extern QString code2text(unsigned long code)
     if (code == 15299) return QString::fromUtf8("Не удается найти запрошенное системное устройство");
     if (code == 15300) return QString::fromUtf8("Создание на сервере хэша указанных версии и типа запрещено");
     if (code == 15301) return QString::fromUtf8("Хэш, запрошенный с сервера, недоступен или недействителен");
+    if (FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,NULL,code,NULL,lpBuffer,MAX_PATH-1,NULL))
+        return QString::fromWCharArray(lpBuffer);
     return QString("%1").arg(code);
 }

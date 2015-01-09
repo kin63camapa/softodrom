@@ -25,6 +25,9 @@ QString SDtranslateKit(QString kit)
     return kit;
 }
 
+
+
+
 void setDefaultConfig(bool replace)
 {
     if (replace) AppSettings->clear();
@@ -506,9 +509,13 @@ QString verExpand(QString string)
 //                current.replace("%PROGRAMFILES(x86)%","%PROGRAMFILES%");
 //            }
         QStringRef vfile(&current, 9, current.size()-9);
+        SDDebugMessage(QString::fromUtf8("verExpand(QString %1)").arg(string),QString::fromUtf8(
+                          "Expand file %1").arg(ExpandEnvironmentString(vfile.toString())));
         current = GetVer(ExpandEnvironmentString(vfile.toString()));
         if (!current.indexOf("ERROR:"))
         {
+            SDDebugMessage(QString::fromUtf8("verExpand(QString %1)").arg(string),QString::fromUtf8(
+                              "%1").arg(current));
             current = string;
             current = GetVer(ExpandEnvironmentString(vfile.toString()));
             if (!current.indexOf("ERROR:"))
