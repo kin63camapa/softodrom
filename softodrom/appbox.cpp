@@ -76,24 +76,20 @@ void appBox::setInfo(appInfo i)
     {
         foreach(QString t,info.kits)
         {
-            if (tmp == "antiviruses")
+            if (t == "avir")
             {
                 info.isAvir = true;
-                ui->NOWbtn->hide();
+                //ui->NOWbtn->hide();
                 if (info.kits.size() != 1)
                 {
                     SDDebugMessage("appBox::setInfo(appInfo)",
-                                   QString("Запрещено включать антивирус в другие группы программ!\nОшибка при разборе %1\\info.txt").arg(info.dir),true,iconerror);
-                    tmp = "antivirusesss";
+                                   QString::fromUtf8("Запрещено включать антивирус в другие группы программ!\nОшибка при разборе %1\\info.txt").arg(info.dir),true,iconerror);
+                    tmp = "avirss";
                     info.kits.clear();
-                    info.kits.append("antiviruses");
+                    info.kits.append("avir");
                     break;
                 }
             }
-//            if (tmp == "nogroup")
-//            {
-//                ;
-//            }
             tmp += t;
             tmp += ", ";
         }
@@ -354,7 +350,7 @@ void appBox::setChecked(bool check)
         }
         if (info.conflicts.size())
         {
-            emit conflictsCheck(info.conflicts);
+            emit conflictsCheck(info.conflicts,info.name);
         }
         if (info.isAvir)
         {
@@ -362,7 +358,7 @@ void appBox::setChecked(bool check)
         }
         if (info.addons.size())
         {
-
+            //TODO
         }
     }
 }

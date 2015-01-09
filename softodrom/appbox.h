@@ -63,7 +63,7 @@ public slots:
 signals:
     void now(appBox*app);
     void avirChecked(appBox*app);
-    void conflictsCheck(QStringList conflicts);
+    void conflictsCheck(QStringList conflicts, QString name);
     void dependsNeed(QStringList depends);
 private slots:
     void on_pushButton_clicked();

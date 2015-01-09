@@ -10,7 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    installOneNow = 0;
+    installOneNow = false;
+    autoSelectorWorking = true;
     setWindowIcon(QIcon(":/softodrom.ico"));
     qRegisterMetaType<appInfo>("appInfo");
     ui->setupUi(this);
@@ -101,8 +102,8 @@ void MainWindow::rebulildBoxes()
     AppSettings->endGroup();
     if (tmp) tmp = (ui->softArea->frameSize().width()-19*2-(ui->softLayout->columnCount()-1)*2)/tmp;
     if (!tmp) tmp = 1;
-    //tmp = 2; //луна твердая! KIN.
-    if (col == tmp)
+    //tmp = 1; //луна твердая! KIN.
+    if (false/*col == tmp*/)
     {
         return;
     }else
@@ -117,7 +118,6 @@ void MainWindow::rebulildBoxes()
                 ui->softLayout->removeWidget(box);
                 ui->softLayout->addWidget(box,r,c++);
                 if (c==col) {c = 0;r++;}
-
             }
             ui->softLayout->addItem(ui->verticalSpacer,r+2,0);
         }
@@ -129,7 +129,7 @@ void MainWindow::rebulildBoxes()
             foreach (appBox *box, update)
             {
                 ui->updateLayout->removeWidget(box);
-                ui->updateLayout->addWidget(box,r,c++);
+                 if (!box->isHidden()) ui->updateLayout->addWidget(box,r,c++);
                 if (c==col) {c = 0;r++;}
             }
             ui->updateLayout->addItem(ui->verticalSpacer_2,r+2,0);
@@ -222,9 +222,10 @@ void MainWindow::scanComplete()
     rebulildBoxes();
     ui->startSetupAction->setDisabled(0);
     ui->startStopButton->setDisabled(0);
-    foreach(appBox* tmp,soft) if (tmp->state == appBox::ready) tmp->setChecked();
-    foreach(appBox* tmp,update) if (tmp->state == appBox::ready) tmp->setChecked();
-    unmarkedKit("nogroup");
+    on_unmarkedAllAction_triggered();
+    markedKit("base");
+    uncheckInstalled();
+    autoSelectorWorking = false;
 }
 
 void MainWindow::on_hideButton_clicked()
@@ -301,7 +302,7 @@ void MainWindow::newApp(appInfo app)
     kits.removeDuplicates();
     connect(tmp,SIGNAL(now(appBox*)),this,SLOT(installOne(appBox*)));
     connect(tmp,SIGNAL(avirChecked(appBox*)),this,SLOT(avirChecked(appBox*)));
-    connect(tmp,SIGNAL(conflictsCheck(QStringList)),this,SLOT(conflictsCheck(QStringList)));
+    connect(tmp,SIGNAL(conflictsCheck(QStringList,QString)),this,SLOT(conflictsCheck(QStringList,QString)));
     connect(tmp,SIGNAL(dependsNeed(QStringList)),this,SLOT(dependsNeed(QStringList)));
     if (tmp->getInfo().isAvir)
     {
@@ -450,6 +451,7 @@ void MainWindow::disableKit(QString kitname)
             tmp->setUnchecked();
         }
     }
+    rebulildBoxes();
 }
 
 void MainWindow::markedKit(QString kitname)
@@ -528,10 +530,18 @@ void MainWindow::on_markedSoftOnly_triggered()
     {
         tmp->setChecked();
     }
+    foreach(appBox* tmp,update)
+    {
+        tmp->setUnchecked();
+    }
 }
 
 void MainWindow::on_markedUpdatesOnly_triggered()
 {
+    foreach(appBox* tmp,soft)
+    {
+        tmp->setUnchecked();
+    }
     foreach(appBox* tmp,update)
     {
         tmp->setChecked();
@@ -588,22 +598,44 @@ void MainWindow::avirChecked(appBox *app)
 {
     foreach(appBox* tmp,soft)
     {
-        if (tmp->getInfo().kits.contains("antiviruses"))
+        if (tmp->getInfo().kits.contains("avir"))
         {
             if (tmp != app)
             {
                 tmp->setUnchecked();
-                QMessageBox::information(this,"Контроль антивирусов",QString::fromUtf8("Обратите внимание в систему можно установить только 1 антивирус!\n"
-                                                                     "Так как для установки был отмечен продукт %1,\n"
-                                                                     "Установка %2 была отменена!").arg(app->getInfo().name).arg(tmp->getInfo().name),QString::fromUtf8("Угу"));
+                if (!autoSelectorWorking)
+                    QMessageBox::information(
+                                this,
+                                QString::fromUtf8("Контроль антивирусов"),
+                                QString::fromUtf8("Обратите внимание в систему можно установить только 1 антивирус!\n"
+                                                  "Так как для установки был отмечен продукт %1,\n"
+                                                  "Установка %2 была отменена!").arg(app->getInfo().name).arg(tmp->getInfo().name),
+                                QString::fromUtf8("Угу"));
             }
         }
     }
 }
 
-void MainWindow::conflictsCheck(QStringList conflicts)
+void MainWindow::conflictsCheck(QStringList conflicts,QString name)
 {
-    ;
+    foreach(appBox* tmp,soft)
+    {
+        foreach (QString tmpName, conflicts)
+        {
+            if (tmp->isChecked() && (tmpName == tmp->getInfo().name))
+            {
+                tmp->setUnchecked();
+                if (!autoSelectorWorking)
+                    QMessageBox::information(
+                                this,
+                                QString::fromUtf8("Контроль конфликтов"),
+                                QString::fromUtf8("Обратите внимание: приложение %1 \n"
+                                                  "конфликтует с %2,\n"
+                                                  "Установка %2 была отменена!").arg(name).arg(tmpName),
+                                QString::fromUtf8("Угу"));
+            }
+        }
+    }
 }
 
 void MainWindow::dependsNeed(QStringList depends)

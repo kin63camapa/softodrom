@@ -27,7 +27,7 @@ void KitMenu::setKitName(QString name)
     connect(setHideDisable,SIGNAL(triggered()),this,SLOT(disable()));
     connect(setCheked,SIGNAL(triggered()),this,SLOT(setMarked()));
     connect(setUncheked,SIGNAL(triggered()),this,SLOT(setUnmarked()));
-
+    if (name == "avir") setCheked->setDisabled(true);
 }
 
 void KitMenu::enable()

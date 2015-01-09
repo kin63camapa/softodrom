@@ -204,7 +204,7 @@ void Scaner::run()
                     if(AppSettings->value("IgnoreDuplicate").toBool())
                     {//игнорим батники
                         tmpAppInfo=parseInfoTxt(tmpFileInfo->absoluteDir().absolutePath()+QDir::separator()+"info.txt",tmpAppInfo);
-                        emit app(tmpAppInfo);
+                        if (!tmpAppInfo.isChecked) emit app(tmpAppInfo);
                         passedDirs += tmpFileInfo->dir().absolutePath();
                         continue;
                     }else
@@ -220,13 +220,18 @@ void Scaner::run()
                             tmpAppInfo=parseBatchFile(tmpFileInfo->absoluteDir().absolutePath()+QDir::separator()+"auto.cmd",tmpAppInfo);
                         }
                         tmpAppInfo=parseInfoTxt(tmpFileInfo->absoluteDir().absolutePath()+QDir::separator()+"info.txt",tmpAppInfo);
-                        emit app(tmpAppInfo);
+                        if (!tmpAppInfo.isChecked) emit app(tmpAppInfo);
                         passedDirs += tmpFileInfo->dir().absolutePath();
                         continue;
                     }
                 }else
                 {//батник приоритетнее
                     tmpAppInfo=parseInfoTxt(tmpFileInfo->absoluteDir().absolutePath()+QDir::separator()+"info.txt",tmpAppInfo);
+                    if (tmpAppInfo.isChecked)
+                    {
+                        passedDirs += tmpFileInfo->dir().absolutePath();
+                        continue;
+                    }
                     //взяли инфу из info.txt
                     if (AppSettings->value("UseAuto.bat").toBool()
                             && (filesInCurrentDir.indexOf("auto.bat")!=-1))
@@ -383,13 +388,26 @@ QString Scaner::codecDetect(QString file)
 
 appInfo Scaner::parseInfoTxt(QString file,appInfo current)
 {
-
     QSettings infoTxt(file,QSettings::IniFormat);
     QString codec = codecDetect(file);
     SDDebugMessage(QString("Scaner::parseInfoTxt(%1)").arg(file.replace("/","\\")),QString("Detect codec %1").arg(codec));
     infoTxt.setIniCodec(QTextCodec::codecForName(codec.toAscii()));
     infoTxt.allKeys();
     current.dir = QFileInfo(file).absolutePath();
+    if (infoTxt.contains("IgnoreOS"))
+    {
+        QString os = OSinfo.toString("%Name%");
+        QString arc = OSinfo.toString("%Arch%");
+        QString arcOs = OSinfo.toString("%Arch%.%Name%");
+        foreach (QString tmp,infoTxt.value("IgnoreOS").toStringList())
+        {
+            if (tmp == os || tmp == arc || tmp == arcOs)
+            {
+                current.isChecked = true;
+                return current;
+            }
+        }
+    }
     if (infoTxt.contains("Key"))
     {
         current.key = infoTxt.value("Key").toString();
@@ -401,6 +419,10 @@ appInfo Scaner::parseInfoTxt(QString file,appInfo current)
     if (infoTxt.contains("Depends"))
     {
         current.depends = infoTxt.value("Depends").toStringList();
+    }
+    if (infoTxt.contains("Conflicts"))
+    {
+        current.conflicts = infoTxt.value("Conflicts").toStringList();
     }
     if (infoTxt.contains("Addons"))
     {
@@ -579,7 +601,6 @@ appInfo Scaner::parseBatchFile(QString file,appInfo current)
         //current.description = QFileInfo(file).fileName();
         current.description =  current.name;
         current.iconString = file;
-        current.isChecked = true;
         current.kits.push_back("kit");
     }
     current.commands.push_back(file.replace("/","\\"));

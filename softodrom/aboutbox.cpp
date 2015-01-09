@@ -119,7 +119,6 @@ bool ClickedLabel::eventFilter( QObject * watched, QEvent * event)
         {
             QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
             emit drag(mouseEvent->pos().x(),mouseEvent->pos().y());
-            qDebug() << "pos:" << mouseEvent->pos().x() << " " << mouseEvent->pos().y() << " btn:" << btn;
         }
         if (event->type() == QEvent::MouseButtonRelease)
         {

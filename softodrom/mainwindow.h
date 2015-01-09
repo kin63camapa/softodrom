@@ -57,7 +57,7 @@ private slots:
     void on_drpOpenBtn_clicked();
 
     void avirChecked(appBox*app);
-    void conflictsCheck(QStringList conflicts);
+    void conflictsCheck(QStringList conflicts, QString name);
     void dependsNeed(QStringList depends);
 private:
     AboutBox *aboutBox;
@@ -73,6 +73,7 @@ private:
     Ui::MainWindow *ui;
     Settings * settings;
     bool installOneNow;
+    bool autoSelectorWorking;
 protected:
    virtual void resizeEvent(QResizeEvent *event);
    virtual void closeEvent(QCloseEvent *e);

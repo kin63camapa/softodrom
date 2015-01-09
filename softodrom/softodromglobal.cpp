@@ -19,9 +19,7 @@ QString SDtranslateKit(QString kit)
     kit.replace("runtimes",QString::fromUtf8("Среды исполнения"));
     kit.replace("home",QString::fromUtf8("Для дома"));
     kit.replace("kit",QString::fromUtf8("Поднаборы"));
-    kit.replace("antiviruses",QString::fromUtf8("Антивирусы"));
-    kit.replace("nogroup",QString::fromUtf8("Вне наборов"));
-    kit.replace("nogroup",QString::fromUtf8("Вне наборов"));
+    kit.replace("avir",QString::fromUtf8("Антивирусы"));
     return kit;
 }
 
@@ -491,23 +489,11 @@ QString verExpand(QString string)
     QString current = string;
     if (!current.indexOf("FROMFILE:"))
     {
-//            if (OSinfo.is64)
-//            {//сначала самые ходовые
-//                if (OSinfo.Win >= OSINFO::W7X64)
-//                {
-//                    current.replace("%programfiles%","%ProgramW6432%");
-//                    current.replace("%PROGRAMFILES%","%ProgramW6432%");
-//                }else
-//                {
-//                    current.replace("%programfiles%","%SYSTEMDRIVE%\\Program Files");
-//                    current.replace("%PROGRAMFILES%","%SYSTEMDRIVE%\\Program Files");
-//                }
-//            }
-//            else
-//            {
-//                current.replace("%programfiles(x86)%","%PROGRAMFILES%");
-//                current.replace("%PROGRAMFILES(x86)%","%PROGRAMFILES%");
-//            }
+        if (!OSinfo.is64)
+        {
+            current.replace("%programfiles(x86)%","%PROGRAMFILES%");
+            current.replace("%PROGRAMFILES(x86)%","%PROGRAMFILES%");
+        }
         QStringRef vfile(&current, 9, current.size()-9);
         SDDebugMessage(QString::fromUtf8("verExpand(QString %1)").arg(string),QString::fromUtf8(
                           "Expand file %1").arg(ExpandEnvironmentString(vfile.toString())));
@@ -518,22 +504,11 @@ QString verExpand(QString string)
                               "%1").arg(current));
             current = string;
             current = GetVer(ExpandEnvironmentString(vfile.toString()));
-            if (!current.indexOf("ERROR:"))
-            {
-                if (OSinfo.is64 && OSinfo.Win < OSINFO::W7X86)
-                {
-                    SDDebugMessage(QString::fromUtf8("verExpand(QString %1)").arg(string),QString::fromUtf8(
-                                      "VerCheck failed! Probably it could happen if the file does not exist"
-                                      " or folder \"Program Files\" has been moved. File %1").arg(current),
-                                  true,iconwarning);
-                }
-            }
         }
     }
     return current;
 }
 
-//using namespace std;
 //#include <comdef.h>
 //#include <Wbemidl.h>
 

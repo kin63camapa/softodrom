@@ -13,7 +13,19 @@ Installer::Installer(QObject *parent) :
 void Installer::setApps(QList<appBox *> apps)
 {
     list.clear();
-    list = apps;
+    appBox * avir;
+    bool avirExist = false;
+    foreach (appBox * tmp , apps)
+    {
+        if (tmp->getInfo().isAvir)
+        {
+            avirExist = true;
+            avir = tmp;
+        }
+        if (tmp->getInfo().kits.contains("runtimes")) list.push_front(tmp);
+        else list.push_back(tmp);
+    }
+    if (avirExist) list.push_back(avir);
 }
 
 HANDLE Installer::SDRunExternalEx(QString cmd, QString dir,appBox *box)
