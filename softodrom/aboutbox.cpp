@@ -96,8 +96,8 @@ void ClickedLabel::moove(int x, int y)
     {
         if (movBtn == btn || movBtn == Qt::NoButton)
         {
-            this->setGeometry(geometry().x()+x-lastX,
-                              geometry().y()+y-lastX,
+            this->setGeometry(geometry().x()-lastX+x,
+                              geometry().y()-lastY+y,
                               geometry().width(),
                               geometry().height());
         }
