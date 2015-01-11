@@ -311,6 +311,7 @@ void Scaner::run()
             continue;
         }
     }
+    while (semaphore) sleep(1);
 }
 
 QStringList Scaner::loadFiles(QDir startDir, QStringList filters, bool rec)

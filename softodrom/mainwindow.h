@@ -47,7 +47,7 @@ private slots:
     void on_showButton_clicked();
     void result(appBox*,appBox::STATE status);
 //    void start(appBox* box);
-    void finish();
+    void installComplete();
     void showAll();
     void hideAll();
     void on_actionHelp_triggered();
@@ -55,7 +55,6 @@ private slots:
     void on_niniteOpenBtn_clicked();
 
     void on_drpOpenBtn_clicked();
-
     void avirChecked(appBox*app);
     void conflictsCheck(QStringList conflicts, QString name);
     void dependsNeed(QStringList depends);

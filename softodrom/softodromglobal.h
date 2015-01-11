@@ -11,6 +11,7 @@ extern void hideConsole();
 extern QString SDtranslateKit(QString kit);
 extern QString ExpandEnvironmentString(QString str);
 extern QString verExpand(QString string);
+extern volatile unsigned long semaphore;
 
 enum SDDebugMessageIco
 {

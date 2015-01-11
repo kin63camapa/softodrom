@@ -36,7 +36,9 @@ MainWindow::MainWindow(QWidget *parent) :
     installer = new Installer(this);
     connect(installer,SIGNAL(result(appBox*,appBox::STATE)),
             this,SLOT(result(appBox*,appBox::STATE)));
-    connect(installer,SIGNAL(finish()),this,SLOT(finish()));
+    connect(installer,SIGNAL(finished()),this,SLOT(installComplete()));
+    connect(installer,SIGNAL(terminated()),this,SLOT(installComplete()));
+    connect(installer,SIGNAL(destroyed()),this,SLOT(installComplete()));
 
     showAllAction =  new QAction(QString::fromUtf8("Показать все"),this);
     connect(showAllAction,SIGNAL(triggered()),this,SLOT(showAll()));
@@ -208,6 +210,7 @@ void MainWindow::scanComplete()
     }
     kitsMenus.clear();
     KitMenu * tmpMenu;
+    kits.removeDuplicates();
     foreach(QString kit, kits)
     {
         tmpMenu = new KitMenu(ui->menu);
@@ -245,10 +248,6 @@ void MainWindow::result(appBox * box, appBox::STATE status)
     box->stopInstall(status);
 }
 
-//void MainWindow::start(appBox * box)
-//{
-//    box->startInstall();
-//}
 
 void MainWindow::showSettings()
 {
@@ -299,7 +298,6 @@ void MainWindow::newApp(appInfo app)
     tmp = new appBox();
     tmp->setInfo(app);
     kits += tmp->getInfo().kits;
-    kits.removeDuplicates();
     connect(tmp,SIGNAL(now(appBox*)),this,SLOT(installOne(appBox*)));
     connect(tmp,SIGNAL(avirChecked(appBox*)),this,SLOT(avirChecked(appBox*)));
     connect(tmp,SIGNAL(conflictsCheck(QStringList,QString)),this,SLOT(conflictsCheck(QStringList,QString)));
@@ -418,7 +416,7 @@ void MainWindow::on_startStopButton_clicked()
     }
 }
 
-void MainWindow::finish()
+void MainWindow::installComplete()
 {
     installOneNow = false;
     if (installer->isRunning()) installer->terminate();
@@ -600,7 +598,7 @@ void MainWindow::avirChecked(appBox *app)
     {
         if (tmp->getInfo().kits.contains("avir"))
         {
-            if (tmp != app)
+            if (tmp != app && tmp->isChecked())
             {
                 tmp->setUnchecked();
                 if (!autoSelectorWorking)

@@ -2,6 +2,7 @@
 #include <QFileIconProvider>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QMessageBox>
 #include "appbox.h"
 #include "ui_appbox.h"
 #include "softodromglobal.h"
@@ -45,9 +46,6 @@ appBox::appBox(QWidget *parent) : QWidget(parent), ui(new Ui::appBox)
     ui->progressBar->hide();
     ui->extInfo->hide();
     AppSettings->beginGroup("View");
-    //ui->name->setMaximumWidth(AppSettings->value("AppBoxWidth").toInt()-10-32-35);
-    //ui->checkBox->setMaximumWidth(AppSettings->value("AppBoxWidth").toInt()-20);
-    //this->setMaximumSize(AppSettings->value("AppBoxWidth").toInt(),AppSettings->value("AppBoxHeight").toInt());
     this->setFixedHeight(80);
     this->setFixedWidth(AppSettings->value("AppBoxWidth").toInt());
     AppSettings->endGroup();
@@ -64,6 +62,7 @@ appBox::~appBox()
 
 void appBox::setInfo(appInfo i)
 {
+    semaphore++;
     this->info = i;
     info.dir.replace("/","\\");
     QString tmp;
@@ -79,11 +78,12 @@ void appBox::setInfo(appInfo i)
             if (t == "avir")
             {
                 info.isAvir = true;
-                //ui->NOWbtn->hide();
+                ui->NOWbtn->hide();
                 if (info.kits.size() != 1)
                 {
                     SDDebugMessage("appBox::setInfo(appInfo)",
-                                   QString::fromUtf8("Запрещено включать антивирус в другие группы программ!\nОшибка при разборе %1\\info.txt").arg(info.dir),true,iconerror);
+                                   QString::fromUtf8("Запрещено включать антивирус в другие группы программ!\n"
+                                                     "Ошибка при разборе %1\\info.txt").arg(i.dir),true,iconerror);
                     tmp = "avirss";
                     info.kits.clear();
                     info.kits.append("avir");
@@ -205,6 +205,7 @@ void appBox::setInfo(appInfo i)
                 ui->licenseLabel->setText(info.license);
         }
     }
+    semaphore--;
 }
 
 void appBox::startWait()

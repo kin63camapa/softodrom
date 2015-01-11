@@ -51,3 +51,6 @@ LIBS += \
 OTHER_FILES += softodrom.rc \
     softodrom64.rc \
     ../help/info.txt
+
+DISTFILES += \
+    ../help/пример info.txt

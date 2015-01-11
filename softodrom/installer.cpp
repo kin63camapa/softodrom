@@ -134,7 +134,6 @@ void Installer::run()
         }
         emit result(box,status);
     }
-    emit finish();
 }
 
 QString Installer::target(QString command)

@@ -17,7 +17,6 @@ protected:
     void run();
 signals:
     void result(appBox*,appBox::STATE);
-    void finish();
 private:
     QString target(QString command);
     QString args(QString command);

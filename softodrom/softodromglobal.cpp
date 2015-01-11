@@ -5,6 +5,8 @@
 
 QSettings *AppSettings;
 OSINFO OSinfo;
+volatile unsigned long semaphore;
+
 
 void hideConsole()
 {
@@ -22,9 +24,6 @@ QString SDtranslateKit(QString kit)
     kit.replace("avir",QString::fromUtf8("Антивирусы"));
     return kit;
 }
-
-
-
 
 void setDefaultConfig(bool replace)
 {
