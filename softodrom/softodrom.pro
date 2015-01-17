@@ -1,9 +1,3 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2014-10-06T01:11:37
-#
-#-------------------------------------------------
-
 
 contains(QMAKE_TARGET.arch, x86_64):{
 TARGET = ../../../softodrom/softodrom64
@@ -50,7 +44,4 @@ LIBS += \
 -L winmm.lib -lwinmm
 OTHER_FILES += softodrom.rc \
     softodrom64.rc \
-    ../help/info.txt
-
-DISTFILES += \
-    ../help/пример info.txt
+    ../help/РїСЂРёРјРµСЂ info.txt
