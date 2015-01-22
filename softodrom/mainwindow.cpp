@@ -418,6 +418,7 @@ void MainWindow::on_startStopButton_clicked()
 
 void MainWindow::installComplete()
 {
+    SDDebugMessage("MainWindow::installComplete()","");
     installOneNow = false;
     if (installer->isRunning()) installer->terminate();
     ui->renewButton->setEnabled(true);

@@ -21,6 +21,7 @@ void Installer::setApps(QList<appBox *> apps)
         {
             avirExist = true;
             avir = tmp;
+            continue;
         }
         if (tmp->getInfo().kits.contains("runtimes")) list.push_front(tmp);
         else list.push_back(tmp);

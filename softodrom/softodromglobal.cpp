@@ -2,6 +2,7 @@
 #include <iostream>
 #include "softodromglobal.h"
 #include "errcodes.h"
+#include <ctime>
 
 QSettings *AppSettings;
 OSINFO OSinfo;
@@ -70,8 +71,9 @@ void setDefaultConfig(bool replace)
 
 void SDDebugMessage(QString header,QString text,bool ignoreDebug, SDDebugMessageIco ico)
 {
-    std::cerr << "\n" << QString(header.toLocal8Bit()).toStdString().c_str()
-              << "\n" << QString(text.toLocal8Bit()).toStdString().c_str() << "\n";
+    std::cerr << "\n" << QString::number(clock()).toStdString().c_str() << " "
+              << QString(header.toLocal8Bit()).toStdString().c_str();
+    if (text.size()) std::cerr << " MESSAGE: " << QString(text.toLocal8Bit()).toStdString().c_str() << "\n";
 
     if (AppSettings->value("DebugMode").toBool() || ignoreDebug)
     {

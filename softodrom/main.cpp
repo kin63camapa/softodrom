@@ -60,7 +60,31 @@ int main(int argc, char *argv[])
     AppSettings->beginGroup("View");
     if (!AppSettings->value("ShowConsole").toBool()) hideConsole();
     AppSettings->endGroup();
-    OSinfo.init();
+    if (!OSinfo.init())
+    {
+        if (a.arguments().count("RunWithElevation")) box->button(QMessageBox::Retry)->hide();
+        else
+        {
+            /*if (box->button(QMessageBox::Retry)->isHidden())*/ box->button(QMessageBox::Retry)->show();
+            box->button(QMessageBox::Retry)->setText(QString::fromUtf8(" Перезапуск c повышением "));
+        }
+        box->setText(QString::fromUtf8("<center><h3><br>Ошибка определения оболочки !?</h3></center>"
+                                       "Собственно... похоже программа не сумела определить версию OS. \n"
+                                       "Такое могло произойти если вы запустили программу в нестандартной среде,"
+                                       "операционная система серьезно повреждена или заражена вирусами!"
+                                       "Сейчас мы можем попробовать продолжить в текущем режиме, однако, скорее всего "
+                                       "Программа будет работать непредсказуемо!"
+                                       ));
+        int res = box->exec();
+        if (res == QMessageBox::No)
+            return 5;
+        if (res == QMessageBox::Retry){
+            SDRunExternal(QCoreApplication::applicationFilePath(),
+                             "RunWithElevation",
+                             QCoreApplication::applicationDirPath()+QDir::separator()+OSinfo.toString("dll%Bits%"));
+            return 0;
+        }
+    };
     if (OSinfo.is64 != OSinfo.is64build)
     {
         if (a.arguments().count("Run64")) box->button(QMessageBox::Retry)->hide();
