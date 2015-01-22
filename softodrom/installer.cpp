@@ -79,6 +79,7 @@ void Installer::run()
             command.replace("%name%",box->getInfo().name);
             command.replace("%key%",box->getInfo().key);
             command.replace("%sep%",QDir::separator());
+            command=ExpandEnvironmentString(command);
             SDDebugMessage("Installer::run()",box->getInfo().dir+"\n"+command);
             process = SDRunExternalEx(command,box->getInfo().dir,box);
             if (process == NULL)
