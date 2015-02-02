@@ -80,7 +80,26 @@ void Installer::run()
             command.replace("%key%",box->getInfo().key);
             command.replace("%sep%",QDir::separator());
             command=ExpandEnvironmentString(command);
-            SDDebugMessage("Installer::run()",box->getInfo().dir+"\n"+command);
+            SDDebugMessage("Installer::run()",QString("Execute %1").arg(box->getInfo().dir+"\n"+command));
+            if (!command.indexOf("mkdir"))
+            {
+                QStringRef dirP(&command, 5, command.size()-5);
+                SDDebugMessage("Installer::run()",QString("Intrnal command mkdir for %1").arg(dirP.toString()));
+                QDir dir(dirP.toString());
+                QString sub(".");
+                if (!dir.isAbsolute())
+                {
+                    dir.setPath(box->getInfo().dir);
+                    sub = dirP.toString();
+                }
+                if (dir.mkdir(sub)) box->setMessage(QString::fromUtf8("Директория %1 создана.").arg(dir.path()+sub));
+                else
+                {
+                    box->setMessage(QString::fromUtf8("Директорию %1 создать не удалось!").arg(dir.path())+sub);
+                    if (status == appBox::normal) status = appBox::warning;
+                }
+                continue;
+            }
             process = SDRunExternalEx(command,box->getInfo().dir,box);
             if (process == NULL)
             {

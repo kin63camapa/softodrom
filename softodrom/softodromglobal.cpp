@@ -117,6 +117,11 @@ HANDLE SDRunExternal(QString app, QString parameters, QString dir, bool RunWithE
 
 QString ExpandEnvironmentString(QString str)
 {
+    if (!OSinfo.is64)
+    {
+        str.replace("%programfiles(x86)%","%PROGRAMFILES%");
+        str.replace("%PROGRAMFILES(x86)%","%PROGRAMFILES%");
+    }
     TCHAR szEnvPath[MAX_PATH];
     ExpandEnvironmentStrings(str.toStdWString().c_str(), szEnvPath, MAX_PATH );
     return QString::fromWCharArray(szEnvPath);
@@ -490,11 +495,6 @@ QString verExpand(QString string)
     QString current = string;
     if (!current.indexOf("FROMFILE:"))
     {
-        if (!OSinfo.is64)
-        {
-            current.replace("%programfiles(x86)%","%PROGRAMFILES%");
-            current.replace("%PROGRAMFILES(x86)%","%PROGRAMFILES%");
-        }
         QStringRef vfile(&current, 9, current.size()-9);
         SDDebugMessage(QString::fromUtf8("verExpand(QString %1)").arg(string),QString::fromUtf8(
                           "Expand file %1").arg(ExpandEnvironmentString(vfile.toString())));

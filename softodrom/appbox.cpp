@@ -142,6 +142,7 @@ void appBox::setInfo(appInfo i)
         if (info.ver == tmp)
         {
             stopInstall(normal);
+            if (info.isAvir) emit avirChecked(this);
         }
     }
     if (info.url.size())

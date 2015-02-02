@@ -53,7 +53,7 @@ private slots:
     void on_actionHelp_triggered();
     void on_actionAbout_triggered();
     void on_niniteOpenBtn_clicked();
-
+    void avirInstalledSlot();
     void on_drpOpenBtn_clicked();
     void avirChecked(appBox*app);
     void conflictsCheck(QStringList conflicts, QString name);
@@ -73,6 +73,7 @@ private:
     Settings * settings;
     bool installOneNow;
     bool autoSelectorWorking;
+    bool avirInstalled;
 protected:
    virtual void resizeEvent(QResizeEvent *event);
    virtual void closeEvent(QCloseEvent *e);

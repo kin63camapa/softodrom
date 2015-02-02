@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     installOneNow = false;
     autoSelectorWorking = true;
+    avirInstalled = false;
     setWindowIcon(QIcon(":/softodrom.ico"));
     qRegisterMetaType<appInfo>("appInfo");
     ui->setupUi(this);
@@ -296,7 +297,9 @@ void MainWindow::newApp(appInfo app)
 {
     appBox *tmp;
     tmp = new appBox();
+    connect(tmp,SIGNAL(avirChecked(appBox*)),this,SLOT(avirInstalledSlot()));
     tmp->setInfo(app);
+    disconnect(tmp,SIGNAL(avirChecked(appBox*)),this,SLOT(avirInstalledSlot()));
     kits += tmp->getInfo().kits;
     connect(tmp,SIGNAL(now(appBox*)),this,SLOT(installOne(appBox*)));
     connect(tmp,SIGNAL(avirChecked(appBox*)),this,SLOT(avirChecked(appBox*)));
@@ -304,8 +307,7 @@ void MainWindow::newApp(appInfo app)
     connect(tmp,SIGNAL(dependsNeed(QStringList)),this,SLOT(dependsNeed(QStringList)));
     if (tmp->getInfo().isAvir)
     {
-        //TODO проверка антивируса
-        ;
+        if (tmp->state != appBox::normal) tmp->setDisabled(avirInstalled);
     }
     soft.push_back(tmp);
 }
@@ -586,6 +588,11 @@ void MainWindow::on_actionAbout_triggered()
 void MainWindow::on_niniteOpenBtn_clicked()
 {
     QDesktopServices::openUrl(QUrl::fromUserInput("https://ninite.com/"));
+}
+
+void MainWindow::avirInstalledSlot()
+{
+    avirInstalled = true;
 }
 
 void MainWindow::on_drpOpenBtn_clicked()
