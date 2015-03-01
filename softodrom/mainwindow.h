@@ -58,6 +58,7 @@ private slots:
     void avirChecked(appBox*app);
     void conflictsCheck(QStringList conflicts, QString name);
     void dependsNeed(QStringList depends);
+    void sortSoft();
 private:
     AboutBox *aboutBox;
     QAction *showAllAction;
@@ -66,7 +67,7 @@ private:
     Scaner * scaner;
     Installer * installer;
     QList<KitMenu*> kitsMenus;
-    QList<appBox*> soft;
+    QList<appBox*> soft;   
     QList<appBox*> update;
     int col;
     Ui::MainWindow *ui;

@@ -98,8 +98,36 @@ void MainWindow::showInfo(bool show)
 
 }
 
+void MainWindow::sortSoft()
+{
+    QList<appBox *> runtimes;
+    QList<appBox *> kit;
+    QList<appBox *> base;
+    QList<appBox *> home;
+    QList<appBox *> avir;
+    QList<appBox *> nogroup;
+    //list.clear();
+    foreach (appBox * tmp , soft)
+    {
+        if (tmp->getInfo().kits.contains("runtimes")){ runtimes.push_back(tmp); continue;}
+        if (tmp->getInfo().kits.contains("kit")){ kit.push_back(tmp); continue;}
+        if (tmp->getInfo().kits.contains("base")){ base.push_back(tmp); continue;}
+        if (tmp->getInfo().kits.contains("home")){ home.push_back(tmp); continue;}
+        if (tmp->getInfo().kits.contains("avir")){ avir.push_back(tmp); continue;}
+        else nogroup.push_back(tmp);
+    }
+    soft.clear();
+    soft+=runtimes;
+    soft+=kit;
+    soft+=base;
+    soft+=home;
+    soft+=avir;
+    soft+=nogroup;
+}
+
 void MainWindow::rebulildBoxes()
 {
+    sortSoft();
     AppSettings->beginGroup("View");
     int tmp = AppSettings->value("AppBoxWidth").toInt();
     AppSettings->endGroup();
@@ -182,7 +210,8 @@ void MainWindow::rescanApps()
 
 void MainWindow::scanComplete()
 {
-    ui->softProgressBar->hide();
+    ui->softProgressBar->setFormat(QString::fromUtf8("  Построение списка %p%"));
+    ui->updProgressBar->setFormat(QString::fromUtf8("  Построение списка %p%"));
     if (soft.size())
     {
         ui->noSoftLabel->hide();
@@ -190,7 +219,6 @@ void MainWindow::scanComplete()
         ui->noSoftLabel->setText(QString::fromUtf8("Нет программ для установки"));
         ui->noSoftLabel->show();
     }
-    ui->updProgressBar->hide();
     if (update.size())
     {
         ui->noUpdateLabel->hide();
@@ -230,6 +258,9 @@ void MainWindow::scanComplete()
     markedKit("base");
     uncheckInstalled();
     autoSelectorWorking = false;
+    ui->softProgressBar->hide();
+    ui->updProgressBar->hide();
+
 }
 
 void MainWindow::on_hideButton_clicked()
@@ -648,3 +679,5 @@ void MainWindow::dependsNeed(QStringList depends)
 {
     ;
 }
+
+

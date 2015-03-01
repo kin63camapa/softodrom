@@ -35,7 +35,7 @@ void Scaner::run()
     }
     updateFolder = QDir(updateFolder.absolutePath());
     QStringList files = loadFiles(startupFolder,filters);
-    emit sizeProgBar(files.size()+1);
+    emit sizeProgBar(files.size()+2);
     appInfo tmpAppInfo;
     QFileInfo *tmpFileInfo = new QFileInfo("C:\blah\blah\blah.txt");
     QStringList filesInCurrentDir;
@@ -102,6 +102,16 @@ void Scaner::run()
             continue;
         }
         if(!tmpFileInfo->dir().dirName().compare("files",Qt::CaseInsensitive))
+        {
+            passedDirs += tmpFileInfo->dir().path();
+            continue;
+        }
+        if(!tmpFileInfo->dir().dirName().compare("update",Qt::CaseInsensitive))
+        {
+            passedDirs += tmpFileInfo->dir().path();
+            continue;
+        }
+        if(!tmpFileInfo->dir().dirName().compare("updates",Qt::CaseInsensitive))
         {
             passedDirs += tmpFileInfo->dir().path();
             continue;
