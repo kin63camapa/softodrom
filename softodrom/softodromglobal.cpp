@@ -336,6 +336,8 @@ QString OSINFO::toString(QString format)
         case W2012: format = format.replace("%Name%","2012"); break;
         case W8_1: format = format.replace("%Name%","8.1"); break;
         case W2012R2: format = format.replace("%Name%","2012R2"); break;
+        case W10P: format = format.replace("%Name%","10"); break;
+        case W2014P: format = format.replace("%Name%","Technical Preview"); break;
         case W10: format = format.replace("%Name%","10"); break;
         case W2014: format = format.replace("%Name%","Technical Preview"); break;
         case WINVALID: format = format.replace("%Name%","Unknown"); break;

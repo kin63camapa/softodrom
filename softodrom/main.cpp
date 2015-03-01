@@ -133,6 +133,6 @@ int main(int argc, char *argv[])
     }
     delete box;
     MainWindow w;
-    w.show();
+    w.showFullScreen();
     return  a.exec();
 }

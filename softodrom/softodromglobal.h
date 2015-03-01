@@ -55,9 +55,12 @@ extern struct OSINFO
        W8_1X86    = 6300,
        W8_1X64    = 6301,
        W2012R2X64 = 6311,
-       W10X86     = 6400,
-       W10X64     = 6401,
-       W2014X64   = 6411,
+       W10X86P    = 6400,
+       W10X64P    = 6401,
+       W2014X64P  = 6411,
+       W10X86     = 10000,
+       W10X64     = 10001,
+       W2014X64   = 10011,
        WINVALIDX
    } Win;
    enum WINNOARCH
@@ -77,8 +80,10 @@ extern struct OSINFO
        W2012      = 6211,
        W8_1       = 6300,
        W2012R2    = 6311,
-       W10        = 6400,
-       W2014      = 6411,
+       W10P       = 6400,
+       W2014P     = 6411,
+       W10        = 10000,
+       W2014      = 10011,
        WINVALID
    } WinNoarch;
    bool isServer;
