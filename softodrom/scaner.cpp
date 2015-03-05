@@ -482,7 +482,7 @@ appInfo Scaner::parseInfoTxt(QString file,appInfo current)
         current.commands += infoTxt.value("Execute.common").toStringList();
     }
     //end execute
-
+    if (infoTxt.contains("MakeTmpDir")) current.mkTmp = infoTxt.value("MakeTmpDir").toBool();
     if (infoTxt.contains("Icon"))
     {
         QFileInfo iconFileInfo(infoTxt.value("Icon").toString());

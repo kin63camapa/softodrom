@@ -12,6 +12,7 @@ public:
     QString fullDescription;
     bool isChecked;
     bool isAvir;
+    bool mkTmp;
     QString ver;
     QString instVer;
     QString url;
@@ -38,6 +39,7 @@ public:
     explicit appBox(QWidget *parent = 0);
     ~appBox();
     void setInfo(appInfo i);
+    void setDir(QString dir){info.dir = dir;}
     appInfo getInfo(){return info;}
     enum STATE
     {

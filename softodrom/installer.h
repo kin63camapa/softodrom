@@ -18,9 +18,6 @@ protected:
 signals:
     void result(appBox*,appBox::STATE);
 private:
-    QString target(QString command);
-    QString args(QString command);
-    QString dropQuotes(QString command);
     QList<appBox*> list;
     HANDLE SDRunExternalEx(QString cmd, QString dir,appBox *box);
     appBox::STATE status;

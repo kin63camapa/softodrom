@@ -3,7 +3,8 @@
 
 #include <QtCore>
 typedef void *HANDLE;
-
+extern volatile unsigned long semaphore;
+extern bool copyDir(const QString &src, const QString &dest);
 extern QSettings *AppSettings;
 extern void setDefaultConfig(bool replace = true);
 extern QString GetVer(QString fileName);
@@ -11,7 +12,6 @@ extern void hideConsole();
 extern QString SDtranslateKit(QString kit);
 extern QString ExpandEnvironmentString(QString str);
 extern QString verExpand(QString string);
-extern volatile unsigned long semaphore;
 
 enum SDDebugMessageIco
 {
@@ -87,6 +87,7 @@ extern struct OSINFO
        WINVALID
    } WinNoarch;
    bool isServer;
+   bool isWine;
    bool is64;
    bool is64build;
    bool isAdmin;
@@ -102,6 +103,7 @@ extern struct OSINFO
    unsigned char Reserved;
    QString toString(QString format = "");
    QString error(QString er = "");
+   QString wineVer;
    bool init();
 private:
    QString lastError;

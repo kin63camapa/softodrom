@@ -57,7 +57,12 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->drpOpenBtn->hide();
     rescanApps();
     QString infoText;
-    QTextStream(&infoText) << QString::fromUtf8("Операционная система: Windows ");
+    QTextStream(&infoText) << QString::fromUtf8("Операционная система: ");
+    if (OSinfo.isWine)
+    {
+        QTextStream(&infoText) << "Wine Ver:"+OSinfo.wineVer+QString::fromUtf8(" предоставляет API ");
+    }
+    else QTextStream(&infoText) << QString::fromUtf8("Windows ");
     if (OSinfo.isServer)
         QTextStream(&infoText) << "Server ";
     QTextStream(&infoText) << OSinfo.toString(QString::fromUtf8("%Name% "));
@@ -105,11 +110,13 @@ void MainWindow::sortSoft()
     QList<appBox *> base;
     QList<appBox *> home;
     QList<appBox *> avir;
+    QList<appBox *> browsers;
     QList<appBox *> nogroup;
     //list.clear();
     foreach (appBox * tmp , soft)
     {
         if (tmp->getInfo().kits.contains("runtimes")){ runtimes.push_back(tmp); continue;}
+        if (tmp->getInfo().kits.contains("browsers")){ browsers.push_back(tmp); continue;}
         if (tmp->getInfo().kits.contains("kit")){ kit.push_back(tmp); continue;}
         if (tmp->getInfo().kits.contains("base")){ base.push_back(tmp); continue;}
         if (tmp->getInfo().kits.contains("home")){ home.push_back(tmp); continue;}
@@ -118,6 +125,7 @@ void MainWindow::sortSoft()
     }
     soft.clear();
     soft+=runtimes;
+    soft+=browsers;
     soft+=kit;
     soft+=base;
     soft+=home;

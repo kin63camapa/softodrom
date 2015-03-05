@@ -427,12 +427,21 @@ bool OSINFO::init()
     error("Пипец какая странная ошибка");
     MajorVersion = 0;
     isServer = 0;
+    isWine = 0;
     _RTL_OSVERSIONINFOEXW osver;
     ZeroMemory(&osver, sizeof(_RTL_OSVERSIONINFOEXW));
     osver.dwOSVersionInfoSize = sizeof(_RTL_OSVERSIONINFOEXW);
+
     HINSTANCE dllHandle;
     if ((dllHandle = LoadLibrary(TEXT("ntdll.dll"))))
     {
+        static const char (*pwine_get_version)(void);
+        pwine_get_version = (const char (*)())GetProcAddress(dllHandle, "wine_get_version");
+        if(pwine_get_version)
+        {
+            isWine = true;
+            wineVer = pwine_get_version();
+        }
         if ((RtlGetVersion = (BOOL(*)(PRTL_OSVERSIONINFOW))GetProcAddress(dllHandle,"RtlGetVersion")))
         {
             if(RtlGetVersion((_RTL_OSVERSIONINFOW *) &osver))
@@ -510,6 +519,40 @@ QString verExpand(QString string)
         }
     }
     return current;
+}
+
+bool copyDir(const QString &src, const QString &dest)
+{
+    SDDebugMessage(QString("copyDir(%1, %2)").arg(src).arg(dest),"Started");
+    QDir dir(src);
+    QDir dirdest(dest);
+    if (!dir.isReadable()) return false;
+    if (!dirdest.exists()) dirdest.mkdir(".");
+    foreach (QFileInfo finfo, dir.entryInfoList())
+    {
+        SDDebugMessage(QString("copyDir(%1, %2)").arg(src).arg(dest),"for "+finfo.fileName());
+        if(finfo.fileName()=="." || finfo.fileName()=="..") continue;
+        if(finfo.isDir())
+        {
+            SDDebugMessage(QString("copyDir(%1, %2)").arg(src).arg(dest),"recursive ("+finfo.filePath()+","+dest+QDir::separator()+finfo.fileName()+")");
+            if (!copyDir(finfo.absolutePath(),dest+QDir::separator()+finfo.fileName())) return false;
+            continue;
+        }
+        if(finfo.isSymLink())
+        {
+            /* do something here */
+            SDDebugMessage(QString("copyDir(%1, %2)").arg(src).arg(dest),"symlink ("+dest+finfo.fileName()+")");
+            continue;
+        }
+        QFile file(finfo.filePath());
+        if(finfo.isFile())
+        {
+            SDDebugMessage(QString("copyDir(%1, %2)").arg(src).arg(dest),"copy to "+dirdest.absolutePath()+QDir::separator()+finfo.fileName());
+            if (!file.copy(dirdest.absolutePath()+QDir::separator()+finfo.fileName())) return false;
+        }
+        else return false;
+    }
+    return true;
 }
 
 //#include <comdef.h>

@@ -16,6 +16,7 @@ void appInfo::clear()
     fullDescription.clear();
     isChecked = false;
     isAvir = false;
+    mkTmp = false;
     ver.clear();
     instVer.clear();
     url.clear();

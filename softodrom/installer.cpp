@@ -12,6 +12,7 @@ Installer::Installer(QObject *parent) :
 
 void Installer::setApps(QList<appBox *> apps)
 {
+    SDDebugMessage("Installer::setApps(QList<appBox *> apps)","Started");
     list.clear();
     appBox * avir;
     bool avirExist = false;
@@ -31,6 +32,7 @@ void Installer::setApps(QList<appBox *> apps)
 
 HANDLE Installer::SDRunExternalEx(QString cmd, QString dir,appBox *box)
 {
+    SDDebugMessage(QString("Installer::SDRunExternalEx(%1,%2,%3)").arg(cmd).arg(dir).arg(box->getInfo().name),"Started");
     STARTUPINFO si = {0};
     PROCESS_INFORMATION pi;
     WCHAR command[MAX_PATH*4] = {0};
@@ -63,16 +65,39 @@ HANDLE Installer::SDRunExternalEx(QString cmd, QString dir,appBox *box)
 
 void Installer::run()
 {
+    SDDebugMessage(QString("Installer::run()"),"Started");
     unsigned long waitResult;
     DWORD exitCode;
     HANDLE process;
     QString arg;
-
+    QString originalDir;
     foreach(appBox *box,list)
     {
         box->startInstall();
         box->setMessage("\n");
         status = appBox::normal;
+        if (box->getInfo().mkTmp)
+        {
+            QString tmpdir = ExpandEnvironmentString("%tmp%")+QDir::separator()+QCoreApplication::applicationName()+"_"+box->getInfo().name+QString::number(QDateTime::currentDateTime().toTime_t());
+            if (copyDir(box->getInfo().dir,tmpdir))
+            {
+                originalDir = box->getInfo().dir;
+                box->setDir(tmpdir);
+                box->setMessage(QString::fromUtf8("Запуск будет произведен из %1").arg(tmpdir));
+            }
+            else{
+                if (false)
+                {
+                    status = appBox::warning;
+                    box->setMessage(QString::fromUtf8("Скопировать программу в %1 не удалось. Запуск из текущего места...").arg(tmpdir));
+                }else
+                {
+                    box->setMessage(QString::fromUtf8("Скопировать программу в %1 не удалось. Установка прервана!").arg(tmpdir));
+                    emit result(box,appBox::error);
+                    continue;
+                }
+            }
+        }
         foreach (QString command, box->getInfo().commands)
         {
             command.replace("%directory%",box->getInfo().dir);
@@ -153,30 +178,8 @@ void Installer::run()
                 }
             }
         }
+        if (box->getInfo().mkTmp) box->setDir(originalDir);
         emit result(box,status);
     }
 }
 
-QString Installer::target(QString command)
-{
-    return command.left(command.indexOf(" "));
-}
-
-QString Installer::args(QString command)
-{
-    return command.right(command.size()-command.indexOf(" ")-1);
-}
-
-QString Installer::dropQuotes(QString command)
-{
-    if (command.at(0) != '\"')
-        return command;
-    else
-        if (command.at(command.size()-1) != '\"')
-            return command;
-        else
-        {
-            command.resize(command.size()-1);
-            return command.right(command.size()-1);
-        }
-}
