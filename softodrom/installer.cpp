@@ -182,4 +182,3 @@ void Installer::run()
         emit result(box,status);
     }
 }
-
