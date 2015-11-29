@@ -21,7 +21,8 @@ SOURCES += \
     softodromglobal.cpp \
     errcodes.cpp \
     aboutbox.cpp \
-    easteregg.cpp
+    easteregg.cpp \
+    sdversion.cpp
 HEADERS  += \
     mainwindow.h \
     appbox.h \
@@ -31,7 +32,8 @@ HEADERS  += \
     installer.h \
     softodromglobal.h \
     errcodes.h \
-    aboutbox.h
+    aboutbox.h \
+    sdversion.h
 FORMS += \
     mainwindow.ui \
     appbox.ui \

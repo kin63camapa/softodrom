@@ -21,7 +21,7 @@ Release:dummy.target = first
 Release:dummy.depends = makeCleanLauncher
 Release:makeCleanLauncher.depends = all
 Release:makeCleanLauncher.CONFIG = phony
-Release:makeCleanLauncher.commands = g++ -static-libgcc -Wl,-subsystem,windows -o ./../../softodrom_launcher ./release/launcher_res.o ./release/main.o
+Release:makeCleanLauncher.commands = g++ -static -Wl,-subsystem,windows -o ./../../softodrom_launcher ./release/launcher_res.o ./release/main.o
 
 }
 OTHER_FILES += launcher.rc

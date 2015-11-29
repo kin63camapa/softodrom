@@ -685,7 +685,7 @@ void MainWindow::conflictsCheck(QStringList conflicts,QString name)
 
 void MainWindow::dependsNeed(QStringList depends)
 {
-    ;
+    depends.clear();
 }
 
 
