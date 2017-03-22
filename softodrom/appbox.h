@@ -1,8 +1,12 @@
 #ifndef APPBOX_H
 #define APPBOX_H
 
+
 #include <QWidget>
 #include <QMovie>
+
+#include "sdversion.h"
+
 struct appInfo
 {
 public:
@@ -13,8 +17,9 @@ public:
     bool isChecked;
     bool isAvir;
     bool mkTmp;
-    QString ver;
-    QString instVer;
+    SdVersion ver;
+    QString instVercmd;
+    SdVersion instVer;
     QString url;
     QString license;
     QString key;
@@ -48,6 +53,7 @@ public:
         warning = 2,
         ready = 100,
         setup = 3,
+        legacy = 4,
         wait = 99
     } state;
     bool isChecked();
@@ -79,6 +85,7 @@ private:
     QPalette pOrange;
     QPalette pRed;
     QPalette pDefault;
+    QPalette pGray;
 };
 
 #endif // APPBOX_H

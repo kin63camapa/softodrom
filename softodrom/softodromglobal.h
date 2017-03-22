@@ -2,16 +2,18 @@
 #define SOFTODROMGLOBAL_H
 
 #include <QtCore>
+#include "sdversion.h"
+
 typedef void *HANDLE;
 extern volatile unsigned long semaphore;
 extern bool copyDir(const QString &src, const QString &dest);
 extern QSettings *AppSettings;
 extern void setDefaultConfig(bool replace = true);
-extern QString GetVer(QString fileName);
+extern SdVersion GetVer(QString fileName);
 extern void hideConsole();
 extern QString SDtranslateKit(QString kit);
 extern QString ExpandEnvironmentString(QString str);
-extern QString verExpand(QString string);
+//extern QString verExpand(QString string);
 
 enum SDDebugMessageIco
 {

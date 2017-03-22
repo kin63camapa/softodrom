@@ -17,8 +17,9 @@ void appInfo::clear()
     isChecked = false;
     isAvir = false;
     mkTmp = false;
-    ver.clear();
-    instVer.clear();
+    instVercmd.clear();
+    ver = SdVersion();
+    instVer = SdVersion();
     url.clear();
     license.clear();
     key.clear();
@@ -40,6 +41,7 @@ appBox::appBox(QWidget *parent) : QWidget(parent), ui(new Ui::appBox)
     pGreen.setBrush(QPalette::Active, QPalette::WindowText,QBrush(QColor(0, 128, 0, 255)));
     pOrange.setBrush(QPalette::Active, QPalette::WindowText,QBrush(QColor(255, 128, 0, 255)));
     pRed.setBrush(QPalette::Active, QPalette::WindowText,QBrush(QColor(255, 0, 0, 255)));
+    pGray.setBrush(QPalette::Active, QPalette::WindowText,QBrush(QColor(128, 128, 128, 255)));
     ui->checkBox->setIcon(QApplication::style()->standardIcon(QStyle::SP_MessageBoxQuestion));
     ui->checkBox->setIconSize(QSize(32,32));
     ui->installerEdit->hide();
@@ -130,21 +132,23 @@ void appBox::setInfo(appInfo i)
     }
     ui->checkBox->setToolTip(info.fullDescription+"\n"+info.dir);
     if (info.dir.size() && info.commands.size() && info.name.size()) state = ready;
-    if (info.ver.size()) ui->version->setText(info.ver);
-    if (info.instVer.size())
+    if (info.ver.isValid()) ui->version->setText(info.ver.toString());
+    if (info.instVer.isValid())
     {
-        tmp.clear();
-        tmp = verExpand(info.instVer);
-        if (!tmp.indexOf("ERROR:"))
+        ui->installedVer->setText(info.instVer.toString());
+        if (info.ver == info.instVer)
         {
-            tmp = QString::fromUtf8("Не найдено");
+           stopInstall(normal);
+           if (info.isAvir) emit avirChecked(this);
         }
-        ui->installedVer->setText(tmp);
-        if (info.ver == tmp)
+        if (info.ver < info.instVer)
         {
-            stopInstall(normal);
-            if (info.isAvir) emit avirChecked(this);
+           stopInstall(legacy);
         }
+    }
+    else
+    {
+        ui->installedVer->setText(QString::fromUtf8("Не найдено"));
     }
     if (info.url.size())
     {
@@ -274,6 +278,17 @@ void appBox::stopInstall(STATE st)
         ui->NOWbtn->show();
         ui->description->setText(info.description);
         ui->description->setPalette(pDefault);
+    case legacy:
+        if (iconFile->exists())
+        {
+            QIcon tmp = provider.icon(*iconFile);
+            QPixmap pix = tmp.pixmap(32,32,QIcon::Disabled);
+            ui->checkBox->setIcon(QIcon(pix));
+        }
+        ui->checkBox->setPalette(pGray);
+        ui->NOWbtn->show();
+        ui->description->setText(info.description);
+        ui->description->setPalette(pGray);
         break;
     default:
         SDDebugMessage("appBox::stopInstall(STATE st)","Coder is invalid!\nInvalid use appBox::stopInstall(STATE st)",true,iconerror);

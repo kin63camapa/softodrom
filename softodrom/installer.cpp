@@ -164,17 +164,19 @@ void Installer::run()
             }
             CloseHandle(process);
         }
-        if (box->getInfo().ver.size() && box->getInfo().instVer.size())
+        if (box->getInfo().ver.isValid() && box->getInfo().instVercmd.size())
         {
-            if (box->getInfo().ver == verExpand(box->getInfo().instVer))
+            //check instwer here
+            box->getInfo().instVer = GetVer(box->getInfo().instVercmd);
+            if (box->getInfo().ver == box->getInfo().instVer)
             {
                 if (status == appBox::error) status = appBox::warning;
-                box->setMessage(QString::fromUtf8("Проверка установленной верссии %1 выполнена успешно!").arg(box->getInfo().ver));
+                box->setMessage(QString::fromUtf8("Проверка установленной верссии %1 выполнена успешно!").arg(box->getInfo().ver.toString()));
             }else
             {
-                if (box->getInfo().instVer.size())
+                if (box->getInfo().instVer.isValid())
                 {
-                    box->setMessage(QString::fromUtf8("Проверка установленной версии %1 не удалась!").arg(box->getInfo().instVer));
+                    box->setMessage(QString::fromUtf8("Проверка установленной версии %1 не удалась!").arg(box->getInfo().instVer.toString()));
                 }
             }
         }

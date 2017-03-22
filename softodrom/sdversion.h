@@ -9,10 +9,12 @@ public:
     SdVersion();
     SdVersion(int major, int minor, int build, int revision);
     SdVersion(QString v);
-    const bool operator>(SdVersion v);
-    const bool operator<(SdVersion v);
-    const bool operator==(SdVersion v);
-    const bool operator!=(SdVersion v){return !operator==(v);}
+    QString toString();
+    bool operator>(SdVersion v);
+    bool operator<(SdVersion v);
+    bool operator==(SdVersion v);
+    bool operator!=(SdVersion v);
+    bool isValid();
 private:
     int major;
     int minor;

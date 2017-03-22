@@ -128,18 +128,22 @@ QString ExpandEnvironmentString(QString str)
 
 }
 
-QString GetVer(QString fileName)
+SdVersion GetVer(QString fileName)
 {
+    if (!fileName.indexOf("FROMFILE:"))
+    {
+        fileName = QStringRef(&fileName, 9, fileName.size()-9).toString();
+    }
     WCHAR strTmp[512];
     DWORD handle;         //didn't actually use (dummy var)
     int infoSize = (int) GetFileVersionInfoSize(fileName.toStdWString().c_str(), &handle);
-    if(infoSize == 0) return "ERROR: Function <GetFileVersionInfoSize> unsuccessful!";
+    if(infoSize == 0) return SdVersion();"ERROR: Function <GetFileVersionInfoSize> unsuccessful!";
     LPVOID pBlock;
     pBlock = new BYTE[infoSize];
     int bResult = GetFileVersionInfo(fileName.toStdWString().c_str(), handle, infoSize, pBlock);
     if(bResult == 0)
     {
-        return "ERROR: Function <GetFileVersionInfo> unsuccessful!";
+        return SdVersion();"ERROR: Function <GetFileVersionInfo> unsuccessful!";
     }
     // Structure used to store enumerated languages and code pages.
     struct LANGANDCODEPAGE {
@@ -153,13 +157,13 @@ QString GetVer(QString fileName)
     bResult = VerQueryValue(pBlock, L"\\VarFileInfo\\Translation", (LPVOID*)&lpTranslate, &dwBytes);
     if(bResult == 0)
     {
-        return "ERROR: Function <VerQueryValue> for Translation unsuccessful!";
+        return SdVersion();"ERROR: Function <VerQueryValue> for Translation unsuccessful!";
     }
     langNumber = dwBytes/sizeof(struct LANGANDCODEPAGE);
     //langNumber always must be equal 1
     if(langNumber != 1)
     {
-        return QString("ERROR: Languages number: %1.").arg(langNumber);
+        return SdVersion();QString("ERROR: Languages number: %1.").arg(langNumber);
     }
     HRESULT hr;
     for(int i=0; i<langNumber; i++)
@@ -167,21 +171,21 @@ QString GetVer(QString fileName)
         hr = wsprintfW(strTmp, TEXT("\\StringFileInfo\\%04X%04X\\FileVersion"),lpTranslate[i].wLanguage, lpTranslate[i].wCodePage);
         if (FAILED(hr))
         {
-            return "ERROR: Unable to get information in this language!";
+            return SdVersion();"ERROR: Unable to get information in this language!";
         }
         // Retrieve file description for language and code page "i".
 
         if (VerQueryValue(pBlock, L"\\", &lpBuffer, &dwBytes))
         {
             VS_FIXEDFILEINFO *fi = (VS_FIXEDFILEINFO*)lpBuffer;
-            fileName.clear();//теперь это версия %)
-            QTextStream(&fileName) << HIWORD(fi->dwFileVersionMS) << "." << LOWORD(fi->dwFileVersionMS) << "." << HIWORD(fi->dwFileVersionLS) << "." << LOWORD(fi->dwFileVersionLS);
+            return SdVersion(HIWORD(fi->dwFileVersionMS),LOWORD(fi->dwFileVersionMS),HIWORD(fi->dwFileVersionLS),LOWORD(fi->dwFileVersionLS));
+            //fileName.clear();//теперь это версия %)
+            //QTextStream(&fileName) << HIWORD(fi->dwFileVersionMS) << "." << LOWORD(fi->dwFileVersionMS) << "." << HIWORD(fi->dwFileVersionLS) << "." << LOWORD(fi->dwFileVersionLS);
         }else
         {
-            return "ERROR: Function <VerQueryValue> for StringFileInfo unsuccessful!";
+            return SdVersion();"ERROR: Function <VerQueryValue> for StringFileInfo unsuccessful!";
         }
     }
-    return fileName;
 }
 
 bool OSINFO::isRunAsAdmin()
@@ -509,13 +513,13 @@ QString verExpand(QString string)
         QStringRef vfile(&current, 9, current.size()-9);
         SDDebugMessage(QString::fromUtf8("verExpand(QString %1)").arg(string),QString::fromUtf8(
                           "Expand file %1").arg(ExpandEnvironmentString(vfile.toString())));
-        current = GetVer(ExpandEnvironmentString(vfile.toString()));
+        //current = GetVer(ExpandEnvironmentString(vfile.toString()));
         if (!current.indexOf("ERROR:"))
         {
             SDDebugMessage(QString::fromUtf8("verExpand(QString %1)").arg(string),QString::fromUtf8(
                               "%1").arg(current));
             current = string;
-            current = GetVer(ExpandEnvironmentString(vfile.toString()));
+            //current = GetVer(ExpandEnvironmentString(vfile.toString()));
         }
     }
     return current;

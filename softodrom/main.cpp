@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     a.setEffectEnabled(Qt::UI_FadeTooltip);
     a.setEffectEnabled(Qt::UI_AnimateToolBox);
     a.setApplicationName("softodrom");
-    a.setApplicationVersion("0.4");
+    a.setApplicationVersion("0.4.1");
     a.setOrganizationName("SmartTech");
     a.setOrganizationDomain("smart-tech.biz");
     a.setAttribute(Qt::AA_DontShowIconsInMenus);

@@ -312,7 +312,7 @@ void Scaner::run()
             tmpAppInfo.description = tmpFileInfo->fileName();
             tmpAppInfo.isChecked = true;
             tmpAppInfo.ver = GetVer(tmpFileInfo->absoluteFilePath().replace("/","\\"));
-            if (tmpAppInfo.ver.contains("ERROR")) tmpAppInfo.ver.clear();
+            //if (tmpAppInfo.ver.contains("ERROR")) tmpAppInfo.ver.clear();
             tmpAppInfo.commands.push_back(file.replace("/","\\"));
             passedDirs += tmpFileInfo->dir().path();
             if (tmpAppInfo.name.isEmpty()) tmpAppInfo.name = tmpFileInfo->fileName();
@@ -529,10 +529,10 @@ appInfo Scaner::parseInfoTxt(QString file,appInfo current)
     }
     if (infoTxt.contains("Ver"))
     {
-        current.ver = infoTxt.value("Ver").toString();
-        if (!current.ver.indexOf("FROMFILE:"))
+        QString tmp = infoTxt.value("Ver").toString();
+        if (!tmp.indexOf("FROMFILE:"))
         {
-            QStringRef vfile(&current.ver, 9, current.ver.size()-9);
+            QStringRef vfile(&tmp, 9, tmp.size()-9);
             if (QFileInfo(vfile.toString()).isAbsolute())
             {
                 SDDebugMessage(QString::fromUtf8("Внимание!"),
@@ -554,14 +554,18 @@ appInfo Scaner::parseInfoTxt(QString file,appInfo current)
                 }
 
             }
+        }else
+        {
+            current.ver = SdVersion(tmp);
         }
     }
     if (infoTxt.contains("VerCheck"))
     {
-        current.instVer = infoTxt.value("VerCheck").toString();
-        current.instVer.replace("%directory%",current.dir);
-        current.instVer.replace("%name%",current.name);
-        current.instVer.replace("%key%",current.key);
+        QString tmp = infoTxt.value("VerCheck").toString();
+        tmp.replace("%directory%",current.dir);
+        tmp.replace("%name%",current.name);
+        tmp.replace("%key%",current.key);
+        current.instVer = GetVer(ExpandEnvironmentString(tmp));
     }
     if (infoTxt.contains("Url"))
     {
@@ -591,7 +595,7 @@ appInfo Scaner::parseBatchFile(QString file,appInfo current)
     {//есть проги
         current.description = QFileInfo(appsInDir[0]).fileName();
         current.ver = GetVer(QFileInfo(appsInDir[0]).absoluteFilePath().replace("/","\\"));
-        if (current.ver.contains("ERROR")) current.ver.clear();
+        //if (current.ver.contains("ERROR")) current.ver.clear();
         if (AppSettings->value("UseIconsFromExe").toBool())
             current.iconString = QFileInfo(file).absolutePath()+QDir::separator()+appsInDir[0];
         else
