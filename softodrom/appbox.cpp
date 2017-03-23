@@ -287,8 +287,9 @@ void appBox::stopInstall(STATE st)
         }
         ui->checkBox->setPalette(pGray);
         ui->NOWbtn->show();
-        ui->description->setText(info.description);
-        ui->description->setPalette(pGray);
+        ui->description->setText(QString::fromUtf8("Установленная версия новее"));
+        ui->description->setPalette(pRed);
+
         break;
     default:
         SDDebugMessage("appBox::stopInstall(STATE st)","Coder is invalid!\nInvalid use appBox::stopInstall(STATE st)",true,iconerror);

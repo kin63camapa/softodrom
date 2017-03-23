@@ -116,6 +116,11 @@ void Scaner::run()
             passedDirs += tmpFileInfo->dir().path();
             continue;
         }
+        if(!tmpFileInfo->dir().dirName().compare("redist",Qt::CaseInsensitive))
+        {
+            passedDirs += tmpFileInfo->dir().path();
+            continue;
+        }
         if (AppSettings->value("SmartOsFolder").toBool())
         {
             if(!tmpFileInfo->dir().dirName().compare("2000",Qt::CaseInsensitive)
