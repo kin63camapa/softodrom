@@ -44,7 +44,7 @@ HANDLE Installer::SDRunExternalEx(QString cmd, QString dir,appBox *box)
         box->setMessage(QString::fromUtf8("Выполнить %1 в %2 не удалось.\n%3.").arg(cmd).arg(dir).arg(code2text(GetLastError())));
         if (AppSettings->value("AddCurrentPath").toBool())
         {
-            if (status == appBox::normal) status = appBox::warning;
+            if (AppSettings->value("AddPathGenWarn").toBool() & status == appBox::normal) status = appBox::warning;
             QString tmp = dir+QDir::separator()+cmd;
             tmp.toWCharArray(command);
             if (!CreateProcess(NULL, command, NULL, NULL, FALSE, 0, NULL, directory, &si, &pi))
@@ -164,7 +164,7 @@ void Installer::run()
             }
             CloseHandle(process);
         }
-        if (box->getInfo().ver.isValid() && box->getInfo().instVercmd.size())
+        if (box->getInfo().ver.isValid() & box->getInfo().instVercmd.size())
         {
             //check instwer here
             box->getInfo().instVer = GetVer(box->getInfo().instVercmd);

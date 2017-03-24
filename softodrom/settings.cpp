@@ -40,6 +40,7 @@ void Settings::on_pushButton_clicked()
         AppSettings->setValue("IngnoreBathOnly",ui->ignoreBachOnlyBox->isChecked());
         AppSettings->setValue("SmartOsFolder",ui->osNameFolderBox->isChecked());
         AppSettings->setValue("AddCurrentPath",ui->addPathCheckBox->isChecked());
+        AppSettings->setValue("AddPathGenWarn",!ui->pathGenWarn->isChecked());
         AppSettings->setValue("DebugMode",ui->debugBox->isChecked());
         AppSettings->beginGroup("View");
         AppSettings->setValue("ShowInfoBlock",ui->ShowInfoBlockBox->isChecked());
@@ -96,6 +97,8 @@ void Settings::init()
     ui->ignoreBachOnlyBox->setChecked(AppSettings->value("IngnoreBathOnly").toBool());
     ui->osNameFolderBox->setChecked(AppSettings->value("SmartOsFolder").toBool());
     ui->addPathCheckBox->setChecked(AppSettings->value("AddCurrentPath").toBool());
+    ui->pathGenWarn->setChecked(!AppSettings->value("AddPathGenWarn").toBool());
+    ui->pathGenWarn->setEnabled(ui->addPathCheckBox->isChecked());
     ui->debugBox->setChecked(AppSettings->value("DebugMode").toBool());
     AppSettings->beginGroup("View");
     ui->ShowInfoBlockBox->setChecked(AppSettings->value("ShowInfoBlock").toBool());

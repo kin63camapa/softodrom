@@ -81,7 +81,6 @@ bool SdVersion::operator==(SdVersion v)
 
 bool SdVersion::isValid()
 {
-    if (revision >= 0 & build >= 0 & minor >= 0 & major >= 0) return true;
-    return false;
+    return revision >= 0 & build >= 0 & minor >= 0 & major >= 0;
 }
 

@@ -570,7 +570,8 @@ appInfo Scaner::parseInfoTxt(QString file,appInfo current)
         tmp.replace("%directory%",current.dir);
         tmp.replace("%name%",current.name);
         tmp.replace("%key%",current.key);
-        current.instVer = GetVer(ExpandEnvironmentString(tmp));
+        current.instVercmd = ExpandEnvironmentString(tmp);
+        current.instVer = GetVer(current.instVercmd);
     }
     if (infoTxt.contains("Url"))
     {

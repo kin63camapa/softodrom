@@ -52,7 +52,9 @@ void setDefaultConfig(bool replace)
     if (!AppSettings->contains("SmartOsFolder"))
         AppSettings->setValue("SmartOsFolder",bool(TRUE));
     if (!AppSettings->contains("AddCurrentPath"))
-        AppSettings->setValue("AddCurrentPath",bool(FALSE));
+        AppSettings->setValue("AddCurrentPath",bool(TRUE));
+    if (!AppSettings->contains("AddPathGenWarn"))
+        AppSettings->setValue("AddPathGenWarn",bool(FALSE));
     if (!AppSettings->contains("DebugMode"))
         AppSettings->setValue("DebugMode",bool(FALSE));
     AppSettings->beginGroup("View");
